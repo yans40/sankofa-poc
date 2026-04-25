@@ -1,0 +1,46 @@
+[
+  {
+    "id": "H_SHANGO",
+    "name": "Shango, Seigneur du Tonnerre",
+    "faction": "orisha",
+    "type": "hero",
+    "cost": 0,
+    "health": 30,
+    "rarity": "legendary",
+    "keywords": [],
+    "effects": [],
+    "flavorText": "La foudre obéit à sa volonté.",
+    "artUrl": "/assets/heroes/shango.svg",
+    "heroPower": {
+      "cost": 2,
+      "description": "Inflige 1 dégât à une cible",
+      "resolve": { "kind": "damage", "amount": 1, "target": { "scope": "choose_enemy" } }
+    },
+    "griot": {
+      "name": "Voie de l'Équilibre",
+      "description": "Tous les 3 sorts joués, le suivant coûte 1 de moins"
+    }
+  },
+  {
+    "id": "H_SHAKA",
+    "name": "Shaka, Roi-Lion",
+    "faction": "zulu",
+    "type": "hero",
+    "cost": 0,
+    "health": 30,
+    "rarity": "legendary",
+    "keywords": [],
+    "effects": [],
+    "flavorText": "La nation Zoulou est sa lance.",
+    "artUrl": "/assets/heroes/shaka.svg",
+    "heroPower": {
+      "cost": 2,
+      "description": "Équipe une arme 2/2 (1 charge)",
+      "resolve": { "kind": "grant_hero_attack", "amount": 2, "duration": "this_turn" }
+    },
+    "griot": {
+      "name": "Impi",
+      "description": "Vos unités gagnent +1 attaque tant que vous contrôlez 2+ unités Zoulou"
+    }
+  }
+]

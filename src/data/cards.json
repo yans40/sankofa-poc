@@ -1,0 +1,335 @@
+[
+  {
+    "id": "O01",
+    "name": "Acolyte de Shango",
+    "faction": "orisha",
+    "type": "unit",
+    "cost": 1,
+    "attack": 1,
+    "health": 2,
+    "rarity": "common",
+    "keywords": [],
+    "effects": [],
+    "flavorText": "Il court après la foudre.",
+    "artUrl": "/assets/cards/O01.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "O02",
+    "name": "Servante de Yemoja",
+    "faction": "orisha",
+    "type": "unit",
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "common",
+    "keywords": ["regeneration"],
+    "effects": [],
+    "flavorText": "Les eaux la guérissent au crépuscule.",
+    "artUrl": "/assets/cards/O02.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "O03",
+    "name": "Forgeron d'Ogun",
+    "faction": "orisha",
+    "type": "unit",
+    "cost": 2,
+    "attack": 3,
+    "health": 2,
+    "rarity": "common",
+    "keywords": ["battlecry"],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Cri de Guerre : votre héros gagne +1 attaque ce tour",
+        "resolve": { "kind": "grant_hero_attack", "amount": 1, "duration": "this_turn" }
+      }
+    ],
+    "flavorText": "Le fer chante sous ses coups.",
+    "artUrl": "/assets/cards/O03.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "O04",
+    "name": "Éclair Mineur",
+    "faction": "orisha",
+    "type": "spell",
+    "cost": 2,
+    "rarity": "common",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Inflige 3 dégâts à une cible",
+        "resolve": { "kind": "damage", "amount": 3, "target": { "scope": "choose_enemy" } }
+      }
+    ],
+    "flavorText": "Un seul éclair suffit.",
+    "artUrl": "/assets/cards/O04.svg"
+  },
+  {
+    "id": "O05",
+    "name": "Tambour de Shango",
+    "faction": "orisha",
+    "type": "unit",
+    "cost": 3,
+    "attack": 2,
+    "health": 4,
+    "rarity": "common",
+    "keywords": ["taunt"],
+    "effects": [],
+    "flavorText": "Son rythme appelle la bataille.",
+    "artUrl": "/assets/cards/O05.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "O06",
+    "name": "Médium des Orishas",
+    "faction": "orisha",
+    "type": "unit",
+    "cost": 3,
+    "attack": 2,
+    "health": 3,
+    "rarity": "rare",
+    "keywords": ["ancestor_call"],
+    "effects": [
+      {
+        "trigger": "on_ancestor_summon",
+        "description": "Appel d'Ancêtre : pioche 1 carte",
+        "resolve": { "kind": "draw", "count": 1, "ownerOnly": true }
+      }
+    ],
+    "flavorText": "Elle entend les voix de l'Autel.",
+    "artUrl": "/assets/cards/O06.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "O07",
+    "name": "Rituel de Yemoja",
+    "faction": "orisha",
+    "type": "ritual",
+    "cost": 4,
+    "rarity": "rare",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Rituel (2 charges) : soigne votre héros de 10 PV",
+        "resolve": { "kind": "heal", "amount": 10, "target": { "scope": "self" } }
+      }
+    ],
+    "flavorText": "Les eaux de la mère guérissent tout.",
+    "artUrl": "/assets/cards/O07.svg",
+    "initialCharges": 2
+  },
+  {
+    "id": "O08",
+    "name": "Esprit Tonnerre",
+    "faction": "orisha",
+    "type": "unit",
+    "cost": 4,
+    "attack": 4,
+    "health": 4,
+    "rarity": "epic",
+    "keywords": ["battlecry"],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Cri de Guerre : inflige 2 dégâts à toutes les unités adverses",
+        "resolve": { "kind": "damage", "amount": 2, "target": { "scope": "all_enemies" } }
+      }
+    ],
+    "flavorText": "Le tonnerre frappe partout à la fois.",
+    "artUrl": "/assets/cards/O08.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "O09",
+    "name": "Yemoja, Mère des Eaux",
+    "faction": "orisha",
+    "type": "unit",
+    "cost": 6,
+    "attack": 4,
+    "health": 7,
+    "rarity": "epic",
+    "keywords": ["battlecry"],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Cri de Guerre : soigne votre héros de 5 PV et pioche 1 carte",
+        "resolve": { "kind": "heal", "amount": 5, "target": { "scope": "self" } }
+      },
+      {
+        "trigger": "on_play",
+        "description": "Cri de Guerre : pioche 1 carte",
+        "resolve": { "kind": "draw", "count": 1, "ownerOnly": true }
+      }
+    ],
+    "flavorText": "La mer porte ses enfants.",
+    "artUrl": "/assets/cards/O09.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "Z01",
+    "name": "Jeune Recrue Impi",
+    "faction": "zulu",
+    "type": "unit",
+    "cost": 1,
+    "attack": 2,
+    "health": 1,
+    "rarity": "common",
+    "keywords": [],
+    "effects": [],
+    "flavorText": "Jeune mais déjà dangereux.",
+    "artUrl": "/assets/cards/Z01.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "Z02",
+    "name": "Lancier Zoulou",
+    "faction": "zulu",
+    "type": "unit",
+    "cost": 2,
+    "attack": 2,
+    "health": 3,
+    "rarity": "common",
+    "keywords": [],
+    "effects": [],
+    "flavorText": "L'iklwa frappe vite et profond.",
+    "artUrl": "/assets/cards/Z02.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "Z03",
+    "name": "Iklwa",
+    "faction": "zulu",
+    "type": "spell",
+    "cost": 2,
+    "rarity": "common",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Inflige 2 dégâts à une unité adverse",
+        "resolve": { "kind": "damage", "amount": 2, "target": { "scope": "choose_enemy" } }
+      }
+    ],
+    "flavorText": "Court et mortel.",
+    "artUrl": "/assets/cards/Z03.svg"
+  },
+  {
+    "id": "Z04",
+    "name": "Vétéran de Rorke's Drift",
+    "faction": "zulu",
+    "type": "unit",
+    "cost": 3,
+    "attack": 3,
+    "health": 3,
+    "rarity": "common",
+    "keywords": ["charge"],
+    "effects": [],
+    "flavorText": "Il a survécu à cent batailles.",
+    "artUrl": "/assets/cards/Z04.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "Z05",
+    "name": "Sangoma Guérisseuse",
+    "faction": "zulu",
+    "type": "unit",
+    "cost": 3,
+    "attack": 2,
+    "health": 4,
+    "rarity": "common",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_turn_end",
+        "description": "À la fin de votre tour : soigne une unité alliée de 2 PV",
+        "resolve": { "kind": "heal", "amount": 2, "target": { "scope": "random_enemy" } }
+      }
+    ],
+    "flavorText": "Ses herbes guérissent les blessures du corps.",
+    "artUrl": "/assets/cards/Z05.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "Z06",
+    "name": "Bouclier Isihlangu",
+    "faction": "zulu",
+    "type": "spell",
+    "cost": 3,
+    "rarity": "rare",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Votre héros gagne Bouclier Divin",
+        "resolve": { "kind": "grant_divine_shield_hero" }
+      }
+    ],
+    "flavorText": "Aucune lame ne passe le grand bouclier.",
+    "artUrl": "/assets/cards/Z06.svg"
+  },
+  {
+    "id": "Z07",
+    "name": "Capitaine Cetshwayo",
+    "faction": "zulu",
+    "type": "unit",
+    "cost": 4,
+    "attack": 3,
+    "health": 4,
+    "rarity": "rare",
+    "keywords": ["battlecry"],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Cri de Guerre : vos autres unités Zoulou gagnent +1/+1",
+        "resolve": { "kind": "buff", "attack": 1, "health": 1, "target": { "scope": "all_allies" } }
+      }
+    ],
+    "flavorText": "Sous son commandement, chaque soldat vaut deux.",
+    "artUrl": "/assets/cards/Z07.svg",
+    "reincarnationCount": 0
+  },
+  {
+    "id": "Z08",
+    "name": "Charge des Cornes",
+    "faction": "zulu",
+    "type": "spell",
+    "cost": 4,
+    "rarity": "rare",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_play",
+        "description": "Vos unités gagnent Charge ce tour",
+        "resolve": { "kind": "grant_charge_all_allies" }
+      }
+    ],
+    "flavorText": "Les cornes du taureau encerclent l'ennemi.",
+    "artUrl": "/assets/cards/Z08.svg"
+  },
+  {
+    "id": "Z09",
+    "name": "Champion Légendaire Mzilikazi",
+    "faction": "zulu",
+    "type": "unit",
+    "cost": 6,
+    "attack": 6,
+    "health": 5,
+    "rarity": "epic",
+    "keywords": ["charge", "deathrattle"],
+    "effects": [
+      {
+        "trigger": "on_death",
+        "description": "Râle : invoque un Lancier Zoulou 2/3",
+        "resolve": { "kind": "summon_token", "cardId": "Z02", "count": 1 }
+      }
+    ],
+    "flavorText": "La mort de Mzilikazi nourrit la victoire.",
+    "artUrl": "/assets/cards/Z09.svg",
+    "reincarnationCount": 0
+  }
+]
