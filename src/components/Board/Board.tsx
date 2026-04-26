@@ -1,4 +1,4 @@
-import { DndContext, type DragEndEvent, useDroppable } from '@dnd-kit/core';
+import { DndContext, type DragEndEvent, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useGameStore } from '../../store/gameStore.js';
 import { BattlefieldUnit } from '../Card/CardComponent.js';
 import { Hand } from '../Hand/Hand.js';
@@ -118,11 +118,17 @@ function Battlefield({ playerId }: { playerId: PlayerId }) {
 
 // ─── Main Board ───────────────────────────────────────────────────────────────
 export function Board() {
-  const { gameState, dispatch, setSelection } = useGameStore(s => ({
+  const { gameState, selection, dispatch, setSelection } = useGameStore(s => ({
     gameState: s.gameState,
+    selection: s.selection,
     dispatch: s.dispatch,
     setSelection: s.setSelection,
   }));
+
+  // Require 8px of movement before drag activates — allows normal clicks to work
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
 
   const activeId = gameState.activePlayerId;
   const opponentId: PlayerId = activeId === 'p1' ? 'p2' : 'p1';
@@ -153,7 +159,7 @@ export function Board() {
   const cycleBg: Record<string, string> = { dawn: 'text-orange-300', day: 'text-yellow-200', night: 'text-blue-300' };
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div
         className="flex h-screen w-screen bg-gray-950 overflow-hidden select-none"
         onClick={handleBoardClick}
@@ -194,6 +200,13 @@ export function Board() {
           <div className="flex justify-center px-4 pb-1">
             <Battlefield playerId={opponentId} />
           </div>
+
+          {/* Attack mode banner */}
+          {selection.kind === 'attacking' && (
+            <div className="mx-4 py-1 text-center text-sm font-bold text-red-300 bg-red-900/40 border border-red-700 rounded animate-pulse">
+              ⚔ Mode Attaque — clique une unité ou le héros adverse
+            </div>
+          )}
 
           {/* Divider */}
           <div className="flex items-center gap-2 px-4 my-1">

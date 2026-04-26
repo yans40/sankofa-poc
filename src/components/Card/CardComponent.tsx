@@ -23,9 +23,13 @@ export function HandCard({ card, playable, onClick, isDragging }: HandCardProps)
       onClick={playable ? onClick : undefined}
       title={card.effects.map(e => e.description).join('\n') || card.name}
       className={[
-        'relative flex flex-col rounded-lg border-2 cursor-pointer select-none',
-        'transition-transform duration-150 hover:scale-105 hover:-translate-y-1',
-        playable ? 'border-yellow-400 shadow-lg shadow-yellow-400/30' : 'border-gray-600 opacity-50 cursor-not-allowed',
+        'relative flex flex-col rounded-lg border-2 select-none',
+        'transition-all duration-150',
+        playable
+          ? isUnit
+            ? 'border-yellow-400 shadow-lg shadow-yellow-400/30 cursor-grab active:cursor-grabbing hover:-translate-y-1'
+            : 'border-yellow-400 shadow-lg shadow-yellow-400/30 cursor-pointer hover:-translate-y-1'
+          : 'border-gray-600 opacity-50 cursor-default',
         card.faction === 'orisha' ? 'bg-amber-950' : card.faction === 'zulu' ? 'bg-green-950' : 'bg-gray-900',
       ].join(' ')}
       style={{ width: 80, minHeight: 110, opacity }}
@@ -107,6 +111,12 @@ export function BattlefieldUnit({ unit, isSelected, isTargetable, isOwn, onClick
       {/* Taunt indicator */}
       {unit.card.keywords.includes('taunt') && (
         <span className="absolute top-0 right-0 bg-orange-700 text-white rounded-bl px-0.5" style={{ fontSize: 8 }}>PROV</span>
+      )}
+      {/* Summoning sickness */}
+      {unit.justSummoned && (
+        <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 text-white text-center leading-tight" style={{ fontSize: 7 }}>
+          Invoqué<br/>ce tour
+        </span>
       )}
 
       <div className="pt-1">
