@@ -8,14 +8,15 @@ const CYCLE_COLOR: Record<string, string> = {
 };
 
 export function GameLog() {
-  const { gameState } = useGameStore(s => ({ gameState: s.gameState }));
+  const { gameState, uiLog } = useGameStore(s => ({ gameState: s.gameState, uiLog: s.uiLog }));
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [gameState.log.length]);
+  }, [gameState.log.length, uiLog.length]);
 
   const recent = gameState.log.slice(-40);
+  const recentUi = uiLog.slice(-12);
 
   return (
     <div className="flex flex-col h-full">
@@ -40,6 +41,16 @@ export function GameLog() {
             </div>
           );
         })}
+        {recentUi.length > 0 && (
+          <div className="mt-2 pt-1 border-t border-gray-800">
+            {recentUi.map((msg, i) => (
+              <div key={`${msg}-${i}`} className="text-xs leading-snug text-red-300">
+                <span className="font-bold">[ui] </span>
+                {msg}
+              </div>
+            ))}
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
