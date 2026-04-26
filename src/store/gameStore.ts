@@ -41,7 +41,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   startGame: (p1, p2) => {
     const state = initialGameState(p1, p2);
-    set({ gameState: state, p1Faction: p1, p2Faction: p2, screen: 'mulligan', selection: { kind: 'none' } });
+    set({
+      gameState: state,
+      p1Faction: p1,
+      p2Faction: p2,
+      screen: 'mulligan',
+      selection: { kind: 'none' },
+      uiToast: null,
+      uiLog: [],
+    });
   },
 
   dispatch: (action) => {

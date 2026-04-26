@@ -31,9 +31,6 @@ function DraggableCard({ card, index, playable, onClickNonUnit, onAttemptWhenLoc
       // Listeners only on units (for drag); spells/rituals get onClick
       {...(isUnit ? listeners : {})}
       {...(isUnit ? attributes : {})}
-      onPointerDown={() => {
-        if (!playable) onAttemptWhenLocked?.();
-      }}
       onClick={() => {
         if (!isUnit && playable) {
           onClickNonUnit?.();
@@ -77,6 +74,7 @@ export function Hand({ playerId, isOpponent = false }: HandProps) {
 
   const player = gameState.players[playerId];
   const isActive = gameState.activePlayerId === playerId;
+  const showInteractionHint = gameState.turn <= 3;
 
   if (isOpponent) {
     return <FaceDownCards count={player.hand.length} />;
@@ -117,9 +115,11 @@ export function Hand({ playerId, isOpponent = false }: HandProps) {
 
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="text-gray-500 text-xs select-none">
-        Unités: glisser | Sorts/Rituels: cliquer
-      </div>
+      {showInteractionHint && (
+        <div className="text-gray-500 text-xs select-none">
+          Unités: glisser | Sorts/Rituels: cliquer
+        </div>
+      )}
       <div className="flex items-end justify-center gap-2 min-h-[110px] py-1 flex-wrap">
         {player.hand.map((card, i) => {
           const playable = isActive && player.energy >= card.cost;
