@@ -1,0 +1,42 @@
+name: "Chore / Tâche technique"
+description: "Tâche de configuration, refactoring ou infrastructure sans valeur fonctionnelle directe"
+labels: ["chore"]
+body:
+  - type: textarea
+    id: why
+    attributes:
+      label: "Pourquoi cette tâche est nécessaire"
+      placeholder: "Ex: la config Vite ne génère pas de sourcemaps en dev, ce qui ralentit le debug."
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: "Ce qui doit être fait"
+      placeholder: "Description technique précise des changements à effectuer."
+    validations:
+      required: true
+
+  - type: textarea
+    id: dod
+    attributes:
+      label: "Definition of Done"
+      placeholder: |
+        - [ ] ...
+        - [ ] `npm run build` passe
+        - [ ] Aucune régression sur les tests existants
+    validations:
+      required: true
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: "Milestone"
+      options:
+        - "M1 — Engine Core"
+        - "M2 — UI minimale"
+        - "M3 — Polish + 20 cartes"
+        - "Transverse"
+    validations:
+      required: true
