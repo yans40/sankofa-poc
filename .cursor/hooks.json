@@ -14,7 +14,7 @@
       },
       {
         "command": ".cursor/hooks/route-to-qa.sh",
-        "matcher": "gh\\s+pr\\s+create|gh\\s+pr\\s+view|git\\s+push",
+        "matcher": "gh\\s+pr\\s+create|git\\s+push",
         "failClosed": false
       }
     ]

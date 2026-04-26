@@ -26,7 +26,7 @@ jobs:
         run: npm run lint
 
       - name: Unit tests
-        run: npm run test -- --run
+        run: npm run test -- --run --coverage --reporter=text
 
       - name: Build
         run: npm run build
