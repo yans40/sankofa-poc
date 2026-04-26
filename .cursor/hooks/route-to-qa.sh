@@ -2,7 +2,7 @@
 set -euo pipefail
 
 input="$(cat)"
-command_text="$(printf '%s' "$input" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get("command",""))' 2>/dev/null || true)"
+command_text="$(printf '%s' "$input" | sed -n 's/.*"command"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
 
 if [[ "$command_text" =~ gh[[:space:]]+pr[[:space:]]+create ]]; then
   cat <<'JSON'

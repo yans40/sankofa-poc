@@ -40,3 +40,15 @@ body:
         - "Transverse"
     validations:
       required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: "Taille estimée"
+      options:
+        - "size:S — < 2h"
+        - "size:M — 2 à 4h"
+        - "size:L — 4 à 8h"
+        - "size:XL — > 8h (à re-découper)"
+    validations:
+      required: true

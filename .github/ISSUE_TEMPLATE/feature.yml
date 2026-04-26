@@ -70,6 +70,7 @@ body:
     id: label_type
     attributes:
       label: "Catégorie"
+      description: "Info de triage (les labels GitHub sont appliqués manuellement par le PM)."
       options:
         - "engine — logique pure TypeScript"
         - "ux — composant React / interaction"
