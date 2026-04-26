@@ -1,0 +1,80 @@
+name: "Feature / User Story"
+description: "Nouvelle fonctionnalité ou user story issue du brief"
+labels: ["feat"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > Réservé au **Chef de Projet**. Ne créer que des tickets présents dans `docs/POC_BRIEF.md`.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "Contexte"
+      description: "Pourquoi cette feature est nécessaire. Référencer la section du brief."
+      placeholder: "POC_BRIEF.md §X — ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_story
+    attributes:
+      label: "User story"
+      description: "Format : En tant que [X], je veux [Y] afin de [Z]."
+      placeholder: "En tant que joueur, je veux ... afin de ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "Critères d'acceptation"
+      description: "Checklist exhaustive. Chaque item doit être vérifiable par QA."
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: "Taille estimée"
+      options:
+        - "size:S — < 2h"
+        - "size:M — 2 à 4h"
+        - "size:L — 4 à 8h"
+        - "size:XL — > 8h (à re-découper)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: "Milestone"
+      options:
+        - "M1 — Engine Core"
+        - "M2 — UI minimale"
+        - "M3 — Polish + 20 cartes"
+    validations:
+      required: true
+
+  - type: input
+    id: dependencies
+    attributes:
+      label: "Dépendances"
+      description: "Issues dont celle-ci dépend. Format : #XX, #YY"
+      placeholder: "#1, #4"
+
+  - type: dropdown
+    id: label_type
+    attributes:
+      label: "Catégorie"
+      description: "Info de triage (les labels GitHub sont appliqués manuellement par le PM)."
+      options:
+        - "engine — logique pure TypeScript"
+        - "ux — composant React / interaction"
+        - "test — tests Vitest"
+        - "chore — config / infra"
+    validations:
+      required: true

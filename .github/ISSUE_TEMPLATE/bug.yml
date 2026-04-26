@@ -1,0 +1,62 @@
+name: "Bug"
+description: "Comportement incorrect constaté lors des tests QA ou en production"
+labels: ["fix"]
+body:
+  - type: textarea
+    id: repro
+    attributes:
+      label: "Étapes de reproduction"
+      placeholder: |
+        1. Aller sur ...
+        2. Jouer la carte ...
+        3. Observer ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: "Comportement observé"
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Comportement attendu"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "Sévérité"
+      options:
+        - "critique — bloque le gameplay / crash"
+        - "majeur — fonctionnalité cassée mais contournable"
+        - "mineur — cosmétique ou edge case rare"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: "Milestone concernée"
+      options:
+        - "M1 — Engine Core"
+        - "M2 — UI minimale"
+        - "M3 — Polish + 20 cartes"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: "Taille estimée"
+      options:
+        - "size:S — < 2h"
+        - "size:M — 2 à 4h"
+        - "size:L — 4 à 8h"
+        - "size:XL — > 8h (à re-découper)"
+    validations:
+      required: true
