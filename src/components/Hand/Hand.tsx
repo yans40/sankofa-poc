@@ -9,9 +9,10 @@ interface DraggableCardProps {
   index: number;
   playable: boolean;
   onClickNonUnit?: () => void;
+  onAttemptWhenLocked?: () => void;
 }
 
-function DraggableCard({ card, index, playable, onClickNonUnit }: DraggableCardProps) {
+function DraggableCard({ card, index, playable, onClickNonUnit, onAttemptWhenLocked }: DraggableCardProps) {
   const isUnit = card.type === 'unit';
 
   // Only units are draggable — spells/rituals use click
@@ -30,7 +31,16 @@ function DraggableCard({ card, index, playable, onClickNonUnit }: DraggableCardP
       // Listeners only on units (for drag); spells/rituals get onClick
       {...(isUnit ? listeners : {})}
       {...(isUnit ? attributes : {})}
-      onClick={!isUnit && playable ? onClickNonUnit : undefined}
+      onPointerDown={() => {
+        if (!playable) onAttemptWhenLocked?.();
+      }}
+      onClick={() => {
+        if (!isUnit && playable) {
+          onClickNonUnit?.();
+          return;
+        }
+        if (!playable) onAttemptWhenLocked?.();
+      }}
     >
       <HandCard card={card} playable={playable} isDragging={isDragging} />
     </div>
@@ -57,11 +67,12 @@ interface HandProps {
 }
 
 export function Hand({ playerId, isOpponent = false }: HandProps) {
-  const { gameState, selection, setSelection, dispatch } = useGameStore(s => ({
+  const { gameState, selection, setSelection, dispatch, pushUiFeedback } = useGameStore(s => ({
     gameState: s.gameState,
     selection: s.selection,
     setSelection: s.setSelection,
     dispatch: s.dispatch,
+    pushUiFeedback: s.pushUiFeedback,
   }));
 
   const player = gameState.players[playerId];
@@ -92,28 +103,46 @@ export function Hand({ playerId, isOpponent = false }: HandProps) {
     }
   }
 
+  function handleLockedCardAttempt(card: Card) {
+    if (!isActive) {
+      pushUiFeedback('Ce n’est pas ton tour.');
+      return;
+    }
+    if (player.energy < card.cost) {
+      pushUiFeedback(`Énergie insuffisante: ${player.energy}/${card.cost}.`);
+      return;
+    }
+    pushUiFeedback('Action indisponible pour cette carte.');
+  }
+
   return (
-    <div className="flex items-end justify-center gap-2 min-h-[110px] py-1 flex-wrap">
-      {player.hand.map((card, i) => {
-        const playable = isActive && player.energy >= card.cost;
-        const isSpellSelected = selection.kind === 'spell' && selection.cardId === card.id;
-        return (
-          <div
-            key={i}
-            className={isSpellSelected ? 'ring-2 ring-yellow-400 rounded-lg' : ''}
-          >
-            <DraggableCard
-              card={card}
-              index={i}
-              playable={playable}
-              onClickNonUnit={() => handleNonUnitClick(card)}
-            />
-          </div>
-        );
-      })}
-      {player.hand.length === 0 && (
-        <span className="text-gray-600 text-sm">Main vide</span>
-      )}
+    <div className="flex flex-col items-center gap-1">
+      <div className="text-gray-500 text-xs select-none">
+        Unités: glisser | Sorts/Rituels: cliquer
+      </div>
+      <div className="flex items-end justify-center gap-2 min-h-[110px] py-1 flex-wrap">
+        {player.hand.map((card, i) => {
+          const playable = isActive && player.energy >= card.cost;
+          const isSpellSelected = selection.kind === 'spell' && selection.cardId === card.id;
+          return (
+            <div
+              key={i}
+              className={isSpellSelected ? 'ring-2 ring-yellow-400 rounded-lg' : ''}
+            >
+              <DraggableCard
+                card={card}
+                index={i}
+                playable={playable}
+                onClickNonUnit={() => handleNonUnitClick(card)}
+                onAttemptWhenLocked={() => handleLockedCardAttempt(card)}
+              />
+            </div>
+          );
+        })}
+        {player.hand.length === 0 && (
+          <span className="text-gray-600 text-sm">Main vide</span>
+        )}
+      </div>
     </div>
   );
 }

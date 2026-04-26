@@ -14,6 +14,8 @@ export type SelectionMode =
 interface GameStore {
   gameState: GameState;
   selection: SelectionMode;
+  uiToast: string | null;
+  uiLog: string[];
   p1Faction: 'orisha' | 'zulu';
   p2Faction: 'orisha' | 'zulu';
   screen: 'faction_select' | 'mulligan' | 'hotseat' | 'game' | 'gameover';
@@ -22,12 +24,16 @@ interface GameStore {
   startGame: (p1: 'orisha' | 'zulu', p2: 'orisha' | 'zulu') => void;
   dispatch: (action: GameAction) => void;
   setSelection: (mode: SelectionMode) => void;
+  pushUiFeedback: (message: string) => void;
+  clearUiToast: () => void;
   confirmHotSeat: () => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
   gameState: initialGameState('orisha', 'zulu'),
   selection: { kind: 'none' },
+  uiToast: null,
+  uiLog: [],
   p1Faction: 'orisha',
   p2Faction: 'zulu',
   screen: 'faction_select',
@@ -61,6 +67,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   setSelection: (mode) => set({ selection: mode }),
+
+  pushUiFeedback: (message) => {
+    set(state => ({
+      uiToast: message,
+      uiLog: [...state.uiLog, message].slice(-80),
+    }));
+  },
+
+  clearUiToast: () => set({ uiToast: null }),
 
   confirmHotSeat: () => {
     set({ screen: 'game', hotSeatPending: null });

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { DndContext, type DragEndEvent, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useGameStore } from '../../store/gameStore.js';
 import { BattlefieldUnit } from '../Card/CardComponent.js';
@@ -118,11 +119,13 @@ function Battlefield({ playerId }: { playerId: PlayerId }) {
 
 // ─── Main Board ───────────────────────────────────────────────────────────────
 export function Board() {
-  const { gameState, selection, dispatch, setSelection } = useGameStore(s => ({
+  const { gameState, selection, uiToast, dispatch, setSelection, clearUiToast } = useGameStore(s => ({
     gameState: s.gameState,
     selection: s.selection,
+    uiToast: s.uiToast,
     dispatch: s.dispatch,
     setSelection: s.setSelection,
+    clearUiToast: s.clearUiToast,
   }));
 
   // Require 8px of movement before drag activates — allows normal clicks to work
@@ -157,6 +160,12 @@ export function Board() {
 
   const activeLabel = `${activeId.toUpperCase()} — ${activePlayer.hero.name.split(',')[0]}`;
   const cycleBg: Record<string, string> = { dawn: 'text-orange-300', day: 'text-yellow-200', night: 'text-blue-300' };
+
+  useEffect(() => {
+    if (!uiToast) return;
+    const timeout = window.setTimeout(() => clearUiToast(), 2200);
+    return () => window.clearTimeout(timeout);
+  }, [uiToast, clearUiToast]);
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
@@ -245,6 +254,12 @@ export function Board() {
         <div className="w-52 border-l border-gray-800 p-3 flex flex-col">
           <GameLog />
         </div>
+
+        {uiToast && (
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-lg border border-red-700 bg-red-950/90 text-red-200 text-sm font-semibold shadow-lg shadow-red-900/40 animate-pulse">
+            {uiToast}
+          </div>
+        )}
       </div>
     </DndContext>
   );
