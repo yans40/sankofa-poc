@@ -1,7 +1,18 @@
+import { useGameStore } from './store/gameStore.js';
+import { FactionSelect } from './screens/FactionSelect.js';
+import { HotSeatScreen } from './screens/HotSeatScreen.js';
+import { VictoryScreen } from './screens/VictoryScreen.js';
+import { MulliganScreen } from './components/MulliganModal/MulliganModal.js';
+import { Board } from './components/Board/Board.js';
+
 export default function App() {
-  return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-      <h1 className="text-3xl font-bold">Sankofa: Rites of War — M1 Engine Core</h1>
-    </div>
-  );
+  const screen = useGameStore(s => s.screen);
+
+  if (screen === 'faction_select') return <FactionSelect />;
+  if (screen === 'mulligan')      return <MulliganScreen />;
+  if (screen === 'hotseat')       return <HotSeatScreen />;
+  if (screen === 'game')          return <Board />;
+  if (screen === 'gameover')      return <VictoryScreen />;
+
+  return <FactionSelect />;
 }

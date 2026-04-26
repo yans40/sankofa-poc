@@ -38,17 +38,17 @@ Chaque question suit ce gabarit :
   1. Aucune protection : la main reste toujours affichée
   2. Écran "Joueur 2 — clique pour révéler ta main" entre chaque transition
 **Recommandation tech :** Option 2 (recommandée par le PO)
-**Décision PO :** _(à confirmer avant M2)_ — Non bloquant pour M1 (pas d'UI)
+**Décision PO :** ✅ Option 2 appliquée en M2 — écran "Joueur X, clique pour révéler ta main"
 
 ### Q-002 — Illustrations placeholders
-**Statut :** 🟡 EN DISCUSSION
+**Statut :** 🟢 TRANCHÉE
 **Contexte :** Comment afficher visuellement les 20 cartes sans illustrations finales ?
 **Options envisagées :**
   1. SVG simples : aplat de couleur faction + nom de la carte
   2. Génération IA (Midjourney, Flux) — mais coût + droits
   3. Banque d'images libres de droits (Unsplash, etc.) — risque thématique
 **Recommandation tech :** Option 1 — SVG paramétrés, propres et neutres
-**Décision PO :** _(à confirmer avant M2)_ — Non bloquant pour M1
+**Décision PO :** ✅ Option 1 appliquée en M2 — SVG paramétrés couleur faction
 
 ### Q-003 — Résolution automatique des Rituels prêts ?
 **Statut :** 🟢 TRANCHÉE
