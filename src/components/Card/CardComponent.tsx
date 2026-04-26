@@ -25,7 +25,11 @@ export function HandCard({ card, playable, onClick, isDragging }: HandCardProps)
       className={[
         'relative flex flex-col rounded-lg border-2 select-none',
         'transition-all duration-150',
-        playable ? 'border-yellow-400 shadow-lg shadow-yellow-400/30 cursor-grab active:cursor-grabbing hover:-translate-y-1' : 'border-gray-600 opacity-50 cursor-default',
+        playable
+          ? isUnit
+            ? 'border-yellow-400 shadow-lg shadow-yellow-400/30 cursor-grab active:cursor-grabbing hover:-translate-y-1'
+            : 'border-yellow-400 shadow-lg shadow-yellow-400/30 cursor-pointer hover:-translate-y-1'
+          : 'border-gray-600 opacity-50 cursor-default',
         card.faction === 'orisha' ? 'bg-amber-950' : card.faction === 'zulu' ? 'bg-green-950' : 'bg-gray-900',
       ].join(' ')}
       style={{ width: 80, minHeight: 110, opacity }}
