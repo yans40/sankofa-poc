@@ -1,5 +1,12 @@
 Closes #
 
+## Provenance
+
+<!-- Cocher l'agent auteur. La review croisée sera assignée à l'autre. -->
+
+- [ ] Author: Claude
+- [ ] Author: Cursor
+
 ## Dev Section
 
 ### Objectif
@@ -30,6 +37,19 @@ Closes #
 - 
 
 ### Verdict QA
-- [ ] qa-passed
-- [ ] qa-passed-with-risks
-- [ ] qa-blocked
+
+<!--
+  Renseigner le verdict en remplaçant le contenu entre les balises.
+  Valeurs autorisées : qa-passed | qa-passed-with-risks | qa-blocked
+  Le workflow .github/workflows/qa-verdict-parser.yml (Phase 3) lira ces balises.
+-->
+
+<!-- verdict:start -->
+qa-pending
+<!-- verdict:end -->
+
+## Cross-review
+
+- [ ] Reviewer adverse assigné (Claude review Cursor / Cursor review Claude)
+- [ ] Label `review:<adversaire>-approved` posé avant merge
+- [ ] Test adversarial ajouté dans `src/engine/__tests__/adversarial/<reviewer>/` (Phase 4, optionnel)

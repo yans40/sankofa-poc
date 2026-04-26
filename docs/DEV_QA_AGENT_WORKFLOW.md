@@ -16,9 +16,22 @@ PM crée ticket (GitHub Issue)
 **Dev ne commence pas sans issue GitHub ouverte et assignée au sprint courant.**
 Voir `docs/PM_AGENT_WORKFLOW.md` pour le cycle de vie complet des tickets.
 
+## Conventions de cross-review
+
+Voir `docs/CROSS_REVIEW_CONVENTIONS.md` pour la matrice complète. Résumé :
+
+| Agent | Branche | Label PR | Reviewer adverse |
+|---|---|---|---|
+| Claude Dev | `feature/claude/<slug>` | `author:claude` | Cursor Dev Reviewer |
+| Cursor Dev | `feature/cursor/<slug>` | `author:cursor` | Claude `dev-reviewer` |
+
+Le PM est **toujours** Claude (`.claude/agents/pm-agent.md`).
+
 ## 1) Role Dev
 
-1. Créer une branche `feature/*` avant toute implémentation.
+1. Créer une branche namespacée selon l'agent :
+   - Claude → `feature/claude/<slug>`
+   - Cursor → `feature/cursor/<slug>`
 2. Se synchroniser avec la base (`develop` par défaut, sinon `main`).
 3. Implémenter de façon ciblée et garder les commits lisibles.
 4. Exécuter localement:
@@ -33,10 +46,13 @@ Voir `docs/PM_AGENT_WORKFLOW.md` pour le cycle de vie complet des tickets.
 1. Produire un plan de test (happy path, edge cases, régression).
 2. Lancer les checks automatiques et suivre la CI PR.
 3. Exécuter les tests manuels critiques selon le scope.
-4. Publier un verdict explicite dans la PR:
-   - `qa-passed`
-   - `qa-passed-with-risks`
-   - `qa-blocked`
+4. Publier un verdict explicite dans la balise parsable du PR template :
+   ```
+   <!-- verdict:start -->
+   qa-passed
+   <!-- verdict:end -->
+   ```
+   Valeurs : `qa-passed` | `qa-passed-with-risks` | `qa-blocked`.
 5. En cas de bug, fournir:
    - étapes de reproduction
    - résultat observé vs attendu

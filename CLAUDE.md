@@ -32,6 +32,16 @@
 - **Conventional Commits** : `feat:`, `fix:`, `chore:`, `test:`, `docs:`, `refactor:`.
 - **Pas de `console.log`** dans le code committé sauf dans le mode CLI explicite.
 
+### Conventions de cross-review (Claude ↔ Cursor)
+
+Le projet est piloté par deux IA en collaboration : **Claude** (PM + Dev + QA) et **Cursor** (Dev + QA). Le but est qu'elles se challengent mutuellement. Voir `docs/CROSS_REVIEW_CONVENTIONS.md` pour le détail.
+
+- **Branches Claude** : `feature/claude/<slug>` (jamais `feature/cursor/*` ni `feature/*` non namespacé).
+- **PR Claude** : labellisée `author:claude` automatiquement (ou manuellement sinon).
+- **Review croisée** : une PR `author:claude` doit recevoir le label `review:cursor-approved` avant merge. Inverse pour les PR Cursor.
+- **Verdict QA** : balises `<!-- verdict:start -->qa-passed<!-- verdict:end -->` parsables dans le commentaire QA.
+- **PM** : exclusivement Claude (`.claude/agents/pm-agent.md`). Le prompt Cursor `pm-readonly.md` ne crée pas de tickets.
+
 ### Architecture
 
 Voir `POC_BRIEF.md` §7 pour la structure de dossier complète. En résumé :
@@ -94,6 +104,18 @@ Cf. `POC_BRIEF.md` §11. Composants React, drag & drop, click-to-target, écran 
 ### Milestone 3 — Polish + 20 cartes
 
 Cf. `POC_BRIEF.md` §11. Implémentation des 20 cartes via le DSL d'effets, animations Framer Motion, écran d'accueil.
+
+## Sub-agents Claude disponibles
+
+Trois agents spécialisés vivent dans `.claude/agents/`. Les invoquer via la commande `Task` quand le contexte le demande :
+
+| Agent | Quand l'invoquer |
+|---|---|
+| `pm-agent` | Découper le brief en tickets GitHub, écrire un `docs/SPRINT_XX.md`, auditer les tickets Cursor |
+| `dev-reviewer` | Reviewer une PR `author:cursor` avant qu'elle ne passe en QA |
+| `qa-challenger` | Second avis indépendant après un verdict QA Cursor |
+
+**Règle d'or** : ne pas confondre les rôles. Le `pm-agent` ne fait pas de review de code ; le `dev-reviewer` n'écrit pas de code ; le `qa-challenger` ne donne pas le verdict initial.
 
 ## Communication avec le PO
 

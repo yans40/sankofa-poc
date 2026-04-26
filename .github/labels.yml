@@ -1,0 +1,117 @@
+# Labels GitHub pour le projet Sankofa POC
+# Synchronisés via le workflow .github/workflows/labels-sync.yml
+# Usage : modifier ce fichier puis push, le workflow applique le diff sur le repo.
+
+# ─────────────────────────────────────────────────────────
+# Provenance — qui a produit la PR
+# ─────────────────────────────────────────────────────────
+- name: "author:claude"
+  color: "8957e5"
+  description: "PR produite par un agent Claude (Code)"
+
+- name: "author:cursor"
+  color: "2da44e"
+  description: "PR produite par un agent Cursor"
+
+# ─────────────────────────────────────────────────────────
+# Cross-review — verdict de l'agent adverse
+# ─────────────────────────────────────────────────────────
+- name: "review:claude-approved"
+  color: "1f6feb"
+  description: "Approuvée par le Dev Reviewer Claude"
+
+- name: "review:cursor-approved"
+  color: "1f6feb"
+  description: "Approuvée par le Dev Reviewer Cursor"
+
+- name: "review:changes-requested"
+  color: "d1242f"
+  description: "Le reviewer adverse demande des changements"
+
+# ─────────────────────────────────────────────────────────
+# Verdict QA — résultat du test
+# ─────────────────────────────────────────────────────────
+- name: "verdict:qa-passed"
+  color: "2da44e"
+  description: "QA validé sans risque"
+
+- name: "verdict:qa-passed-with-risks"
+  color: "bf8700"
+  description: "QA validé avec risques documentés"
+
+- name: "verdict:qa-blocked"
+  color: "d1242f"
+  description: "QA bloque le merge"
+
+- name: "verdict:qa-confirmed"
+  color: "0969da"
+  description: "Verdict QA confirmé par le QA Challenger adverse"
+
+- name: "verdict:qa-escalate"
+  color: "d1242f"
+  description: "Désaccord entre QA et QA Challenger — escalade au PM"
+
+# ─────────────────────────────────────────────────────────
+# Type — catégorie fonctionnelle
+# ─────────────────────────────────────────────────────────
+- name: "feat"
+  color: "a2eeef"
+  description: "Nouvelle fonctionnalité issue du brief"
+
+- name: "fix"
+  color: "d73a4a"
+  description: "Correction d'un bug constaté"
+
+- name: "chore"
+  color: "cfd3d7"
+  description: "Configuration / infrastructure / refactor"
+
+- name: "test"
+  color: "fbca04"
+  description: "Ajout ou correction de tests Vitest"
+
+- name: "engine"
+  color: "5319e7"
+  description: "Logique pure TypeScript dans src/engine/"
+
+- name: "ux"
+  color: "0e8a16"
+  description: "Composant React ou interaction utilisateur"
+
+# ─────────────────────────────────────────────────────────
+# Taille — estimation
+# ─────────────────────────────────────────────────────────
+- name: "size:S"
+  color: "c2e0c6"
+  description: "< 2h"
+
+- name: "size:M"
+  color: "7ec699"
+  description: "2 à 4h"
+
+- name: "size:L"
+  color: "f9d0c4"
+  description: "4 à 8h"
+
+- name: "size:XL"
+  color: "e99695"
+  description: "> 8h — à re-découper avant de démarrer"
+
+# ─────────────────────────────────────────────────────────
+# Milestone — phase du POC
+# ─────────────────────────────────────────────────────────
+- name: "M1 — Engine Core"
+  color: "0052cc"
+  description: "Moteur de règles testé en TS pur"
+
+- name: "M2 — UI minimale"
+  color: "0052cc"
+  description: "Composants React + drag&drop"
+
+- name: "M3 — Polish + 20 cartes"
+  color: "0052cc"
+  description: "20 cartes, animations, écran d'accueil"
+
+- name: "Transverse"
+  color: "8b949e"
+  description: "Tâche transverse aux milestones"

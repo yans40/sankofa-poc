@@ -1,6 +1,8 @@
 # PM Agent Workflow
 
-Ce document décrit le processus complet du Chef de Projet (PM) dans le flow Dev → QA.
+> **Le PM est exclusivement Claude.** L'agent vit dans `.claude/agents/pm-agent.md`. Le prompt Cursor `pm-readonly.md` (Phase 1) ne crée pas de tickets — il sert uniquement à du triage en lecture.
+
+Ce document décrit le processus complet du Chef de Projet (PM) dans le flow Dev → QA, en tenant compte du double pipeline Claude / Cursor (cf. `docs/CROSS_REVIEW_CONVENTIONS.md`).
 
 ---
 
