@@ -6,7 +6,7 @@ import type {
   UnitInstance,
   EffectResolver,
 } from './types.js';
-import { addLog, drawCard, getOpponentId } from './gameState.js';
+import { addLog, drawCard, getOpponentId, getCardById } from './gameState.js';
 import { resolveUnitAttackUnit, resolveUnitAttackHero, processDeaths } from './combat.js';
 import { invokeAncestor } from './ancestors.js';
 import { playRitual, makeOffering, resolveReadyRituals } from './rituals.js';
@@ -513,13 +513,39 @@ function resolveEffect(
         ...state,
         players: {
           ...state.players,
-          [playerId]: { ...p, heroAttack: p.heroAttack },
+          [playerId]: { ...p, heroDivineShield: true },
         },
       };
     }
     case 'summon_token': {
-      // Tokens are handled post-death in processDeaths via deathrattle
-      return state;
+      const tokenCard = getCardById(resolver.cardId);
+      if (!tokenCard) return state;
+      const p = state.players[playerId];
+      const tokens: UnitInstance[] = [];
+      for (let i = 0; i < resolver.count; i++) {
+        if (p.battlefield.length + tokens.length >= 7) break;
+        tokens.push({
+          instanceId: generateInstanceId(),
+          card: tokenCard,
+          currentAttack: tokenCard.attack ?? 0,
+          currentHealth: tokenCard.health ?? 0,
+          maxHealth: tokenCard.health ?? 0,
+          hasAttackedThisTurn: false,
+          justSummoned: true,
+          isSpectral: false,
+          spectralExpiresAtTurn: null,
+          hasDivineShield: tokenCard.keywords.includes('divine_shield'),
+          ownerId: playerId,
+        });
+      }
+      if (tokens.length === 0) return state;
+      return {
+        ...state,
+        players: {
+          ...state.players,
+          [playerId]: { ...p, battlefield: [...p.battlefield, ...tokens] },
+        },
+      };
     }
     default:
       return state;

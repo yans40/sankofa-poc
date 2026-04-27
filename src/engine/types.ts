@@ -99,6 +99,7 @@ export interface PlayerState {
   heroMaxHealth: number;
   heroPowerUsedThisTurn: boolean;
   heroAttack: number;
+  heroDivineShield: boolean;
   heroWeaponCharges: number;
   energy: number;
   maxEnergy: number;

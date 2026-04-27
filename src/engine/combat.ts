@@ -1,6 +1,42 @@
-import type { GameState, PlayerId, UnitInstance } from './types.js';
-import { addLog, getOpponentId } from './gameState.js';
+import type { GameState, PlayerId, UnitInstance, EffectResolver } from './types.js';
+import { addLog, getOpponentId, getCardById } from './gameState.js';
 import { sendToAltar } from './ancestors.js';
+
+function generateInstanceId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function resolveDeathrattleEffect(state: GameState, playerId: PlayerId, resolver: EffectResolver): GameState {
+  if (resolver.kind !== 'summon_token') return state;
+  const tokenCard = getCardById(resolver.cardId);
+  if (!tokenCard) return state;
+  const p = state.players[playerId];
+  const tokens: UnitInstance[] = [];
+  for (let i = 0; i < resolver.count; i++) {
+    if (p.battlefield.length + tokens.length >= 7) break;
+    tokens.push({
+      instanceId: generateInstanceId(),
+      card: tokenCard,
+      currentAttack: tokenCard.attack ?? 0,
+      currentHealth: tokenCard.health ?? 0,
+      maxHealth: tokenCard.health ?? 0,
+      hasAttackedThisTurn: false,
+      justSummoned: true,
+      isSpectral: false,
+      spectralExpiresAtTurn: null,
+      hasDivineShield: tokenCard.keywords.includes('divine_shield'),
+      ownerId: playerId,
+    });
+  }
+  if (tokens.length === 0) return state;
+  return {
+    ...state,
+    players: {
+      ...state.players,
+      [playerId]: { ...p, battlefield: [...p.battlefield, ...tokens] },
+    },
+  };
+}
 
 function applyDamageToUnit(unit: UnitInstance, damage: number): UnitInstance {
   if (unit.hasDivineShield && damage > 0) {
@@ -12,6 +48,12 @@ function applyDamageToUnit(unit: UnitInstance, damage: number): UnitInstance {
 function applyDamageToHero(state: GameState, targetId: PlayerId, damage: number): GameState {
   const target = state.players[targetId];
   if (target.heroHealth <= 0) return state;
+  if (target.heroDivineShield && damage > 0) {
+    return {
+      ...state,
+      players: { ...state.players, [targetId]: { ...target, heroDivineShield: false } },
+    };
+  }
   const newHealth = Math.max(0, target.heroHealth - damage);
   let next: GameState = {
     ...state,
@@ -138,23 +180,28 @@ export function resolveUnitAttackHero(
 export function processDeaths(state: GameState): GameState {
   let next = state;
   for (const pid of ['p1', 'p2'] as PlayerId[]) {
-    const player = next.players[pid];
-    const dead = player.battlefield.filter(u => u.currentHealth <= 0);
-    const alive = player.battlefield.filter(u => u.currentHealth > 0);
-
+    const dead = next.players[pid].battlefield.filter(u => u.currentHealth <= 0);
     if (dead.length === 0) continue;
 
-    let altarState = next;
+    let afterDeaths = next;
     for (const unit of dead) {
-      altarState = addLog(altarState, 'system', `${unit.card.name} est détruit.`);
-      altarState = sendToAltar(altarState, pid, unit);
+      afterDeaths = addLog(afterDeaths, 'system', `${unit.card.name} est détruit.`);
+      afterDeaths = sendToAltar(afterDeaths, pid, unit);
+      for (const effect of unit.card.effects) {
+        if (effect.trigger !== 'on_death') continue;
+        afterDeaths = addLog(afterDeaths, 'system', `${unit.card.name} : effet de mort déclenché.`);
+        afterDeaths = resolveDeathrattleEffect(afterDeaths, pid, effect.resolve);
+      }
     }
 
     next = {
-      ...altarState,
+      ...afterDeaths,
       players: {
-        ...altarState.players,
-        [pid]: { ...altarState.players[pid], battlefield: alive },
+        ...afterDeaths.players,
+        [pid]: {
+          ...afterDeaths.players[pid],
+          battlefield: afterDeaths.players[pid].battlefield.filter(u => u.currentHealth > 0),
+        },
       },
     };
   }
