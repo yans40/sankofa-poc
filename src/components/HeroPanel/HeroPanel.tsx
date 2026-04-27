@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 import { HeroArtSVG } from '../../utils/cardArt.js';
 import type { PlayerId } from '../../engine/types.js';
@@ -82,6 +83,19 @@ export function HeroPanel({ playerId }: HeroPanelProps) {
   const hpPercent = Math.max(0, (player.heroHealth / player.heroMaxHealth) * 100);
   const hpColor = hpPercent > 50 ? 'bg-green-500' : hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500';
 
+  const prevHeroHp = useRef(player.heroHealth);
+  const [damageFlash, setDamageFlash] = useState(false);
+  useEffect(() => {
+    if (player.heroHealth < prevHeroHp.current) {
+      setDamageFlash(true);
+      const timer = window.setTimeout(() => setDamageFlash(false), 200);
+      prevHeroHp.current = player.heroHealth;
+      return () => window.clearTimeout(timer);
+    }
+    prevHeroHp.current = player.heroHealth;
+    return undefined;
+  }, [player.heroHealth]);
+
   return (
     <div className="flex flex-col items-center gap-1">
       {/* Hero portrait */}
@@ -89,6 +103,12 @@ export function HeroPanel({ playerId }: HeroPanelProps) {
         onClick={handleClick}
         className={`relative rounded-full transition-all duration-150 ${ringClass}`}
       >
+        {damageFlash && (
+          <span
+            className="pointer-events-none absolute inset-0 z-10 rounded-full bg-red-500/45"
+            aria-hidden
+          />
+        )}
         <HeroArtSVG card={hero} width={72} height={72} />
         {/* HP overlay */}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-gray-900 border border-gray-600 rounded px-2 py-0.5 text-xs font-bold text-white whitespace-nowrap">
