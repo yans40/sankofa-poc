@@ -149,7 +149,7 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
 | 2 — Routage auto | Workflow `cross-review-router.yml` + branch protection | ✅ Implémentée |
 | 3 — Verdicts parsés | Workflow `qa-verdict-parser.yml` + `docs/qa-history.md` | ✅ Implémentée |
 | 4 — Tests adversariaux | Dossier `__tests__/adversarial/{claude,cursor}/` + coverage gate | ✅ Implémentée |
-| 5 — Hooks Claude + dashboard | `.claude/hooks/` symétrique + `docs/CROSS_REVIEW_DASHBOARD.md` | ⏳ À faire |
+| 5 — Hooks Claude + dashboard | `.claude/hooks/` symétrique + `docs/CROSS_REVIEW_DASHBOARD.md` | ✅ Implémentée |
 
 ---
 
@@ -161,7 +161,7 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
 | 3 boucles `qa-blocked` consécutives | Escalade au PO (Yans) |
 | Reviewer adverse silencieux > 48h | Le PM peut forcer le merge en signant manuellement le label adverse, avec note dans `docs/SPRINT_XX.md` |
 | PR sans label `author:*` | CI bloque le merge (Phase 2) |
-| Branche hors namespace | Hook bloque les ops Git (Phase 0 ✅ pour Cursor) |
+| Branche hors namespace | Hook bloque les ops Git (Phase 0 ✅ Cursor, Phase 5 ✅ Claude) |
 | `qa-confirmed` posé sans test adversarial ni justification | PM Claude rouvre le verdict, demande au Challenger de compléter |
 | Coverage statements < 70 % | CI bloque le merge automatiquement |
 
@@ -211,7 +211,44 @@ node scripts/check-coverage.mjs
 
 ---
 
-## 11. Glossaire rapide
+## 11. Dashboard et hooks Claude
+
+### Dashboard cross-review
+
+`docs/CROSS_REVIEW_DASHBOARD.md` est le tableau de bord du dispositif. Il agrège :
+- Activité par camp (PR ouvertes, mergées, verdicts posés, tests adversariaux)
+- État temps réel des PR en cours (CI, review adverse, verdict QA, bloqueurs)
+- Historique des 10 derniers verdicts (`docs/qa-history.md`)
+- Coverage actuel (`coverage/coverage-summary.json`)
+- Désaccords ouverts (`verdict:qa-escalate` sans résolution)
+- Santé globale du dispositif
+
+**Usage PO** : relire le dashboard une fois par sprint pour détecter les verdicts en attente > 48h
+(relancer l'agent concerné) et les désaccords ouverts (demander arbitrage au PM Claude).
+
+**Refresh local :**
+```bash
+node scripts/generate-dashboard.mjs
+```
+
+**Refresh automatique :** workflow `dashboard-refresh.yml` — tous les jours à 06:00 UTC + à chaque
+PR mergée sur `develop`.
+
+### Hooks Claude
+
+`.claude/hooks/ensure-feature-branch.sh` + `.claude/hooks.json` assurent, côté Claude, la même
+protection que `.cursor/hooks/` côté Cursor :
+
+| Situation | Comportement |
+|---|---|
+| Branche `main`/`develop` | exit 1 — commit bloqué |
+| Branche `feature/cursor/*` | exit 1 — camp adverse |
+| Branche hors `feature/claude/<slug>` | exit 1 — format invalide |
+| Branche `feature/claude/<slug>` valide | exit 0 silencieux |
+
+---
+
+## 12. Glossaire rapide
 
 - **Dev Reviewer** : agent qui audite le code de l'autre camp avant QA. Verdict en commentaire structuré.
 - **QA Challenger** : agent qui produit un second avis indépendant après le QA initial.
