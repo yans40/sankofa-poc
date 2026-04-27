@@ -51,6 +51,7 @@ function buildPlayerState(id: PlayerId, faction: 'orisha' | 'zulu'): PlayerState
     heroMaxHealth: 30,
     heroPowerUsedThisTurn: false,
     heroAttack: 0,
+    heroDivineShield: false,
     heroWeaponCharges: 0,
     energy: 0,
     maxEnergy: 0,
@@ -90,6 +91,10 @@ export function initialGameState(
     ],
     mulliganDone: { p1: false, p2: false },
   };
+}
+
+export function getCardById(id: string): Card | undefined {
+  return allCards.find(c => c.id === id);
 }
 
 export function addLog(
