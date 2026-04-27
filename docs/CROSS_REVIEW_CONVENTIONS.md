@@ -142,7 +142,7 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
 | 1 — Symétrie Cursor | `.cursor/prompts/dev-reviewer-cursor.md`, `qa-challenger-cursor.md`, `pm-readonly.md` (remplace l'ancien `pm-agent.md` Cursor) | ✅ Implémentée |
 | 2 — Routage auto | Workflow `cross-review-router.yml` + branch protection | ✅ Implémentée |
 | 3 — Verdicts parsés | Workflow `qa-verdict-parser.yml` + `docs/qa-history.md` | ⏳ À faire |
-| 4 — Tests adversariaux | Dossier `__tests__/adversarial/{claude,cursor}/` + coverage gate | ⏳ À faire |
+| 4 — Tests adversariaux | Dossier `__tests__/adversarial/{claude,cursor}/` + coverage gate | ✅ Implémentée |
 | 5 — Hooks Claude + dashboard | `.claude/hooks/` symétrique + `docs/CROSS_REVIEW_DASHBOARD.md` | ⏳ À faire |
 
 ---
@@ -156,10 +156,56 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
 | Reviewer adverse silencieux > 48h | Le PM peut forcer le merge en signant manuellement le label adverse, avec note dans `docs/SPRINT_XX.md` |
 | PR sans label `author:*` | CI bloque le merge (Phase 2) |
 | Branche hors namespace | Hook bloque les ops Git (Phase 0 ✅ pour Cursor) |
+| `qa-confirmed` posé sans test adversarial ni justification | PM Claude rouvre le verdict, demande au Challenger de compléter |
+| Coverage statements < 70 % | CI bloque le merge automatiquement |
 
 ---
 
-## 9. Glossaire rapide
+## 10. Tests adversariaux
+
+### Convention de nommage
+
+Les tests adversariaux vivent dans `src/engine/__tests__/adversarial/` et sont organisés par camp :
+
+```
+adversarial/
+├── claude/    ← écrits par Claude (QA Challenger sur une PR Cursor)
+│   └── <numéro-PR>-<slug>.test.ts
+└── cursor/    ← écrits par Cursor (QA Challenger sur une PR Claude)
+    └── <numéro-PR>-<slug>.test.ts
+```
+
+### Règle du test obligatoire avant `qa-confirmed`
+
+Avant de poser le verdict `qa-confirmed`, le QA Challenger **doit** pousser au moins un test
+Vitest dans son sous-dossier, couvrant un cas non couvert par le QA initial adverse.
+
+Si aucun cas manqué n'est trouvé, un test de non-régression sur la zone touchée est acceptable,
+avec un commentaire JSDoc qui justifie ce choix.
+
+**Exception** : PR `docs` ou `chore` sans surface fonctionnelle testable → justification
+explicite dans le commentaire de verdict, aucun test adversarial exigé.
+
+### Coverage gate
+
+Seuils imposés par CI (job `lint-test-build` dans `pr-checks.yml`) :
+
+| Métrique   | Seuil minimum |
+|------------|---------------|
+| Statements | 70 %          |
+| Functions  | 70 %          |
+| Branches   | 65 %          |
+| Lines      | 70 %          |
+
+Vérification locale :
+```bash
+npm run test:coverage
+node scripts/check-coverage.mjs
+```
+
+---
+
+## 11. Glossaire rapide
 
 - **Dev Reviewer** : agent qui audite le code de l'autre camp avant QA. Verdict en commentaire structuré.
 - **QA Challenger** : agent qui produit un second avis indépendant après le QA initial.

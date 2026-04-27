@@ -60,6 +60,22 @@ Format imposé :
 - Les risques sont-ils documentés et acceptables au regard du brief ?
 - Un ticket de suivi a-t-il été créé pour chaque risque ? (Sinon, demander au PM Claude.)
 
+### Étape 3.5 — Test adversarial obligatoire
+
+Avant de poser `qa-confirmed`, tu dois pousser **au moins un test Vitest** dans
+`src/engine/__tests__/adversarial/cursor/<numéro-PR>-<slug>.test.ts`
+qui couvre **un cas non couvert** par le QA initial Claude.
+
+Si aucun cas manqué n'est trouvé après une analyse honnête, le test peut être un test de
+non-régression sur la zone touchée par la PR (avec un commentaire JSDoc qui le justifie).
+
+**Exception** : si la PR est `docs` ou `chore` sans impact fonctionnel testable, tu peux
+poser `qa-confirmed` sans test adversarial, en justifiant explicitement dans le commentaire
+de verdict (« PR sans surface fonctionnelle testable, aucun test adversarial pertinent »).
+
+**Conséquence** : si tu poses `qa-confirmed` sans test adversarial ni justification → le
+PM Claude rouvre le verdict.
+
 ### Étape 4 — Verdict QA Challenger
 
 Publier un commentaire structuré avec **balise parsable** :
@@ -108,6 +124,8 @@ Si `qa-reopen` : retirer le label `verdict:qa-passed*` et poser `verdict:qa-bloc
 | CI rouge | `qa-reopen` automatique, sans analyse supplémentaire |
 | `console.log` ou `// TODO` committé | `qa-reopen` |
 | Coverage chute sous 70% | `qa-escalate` |
+| `qa-confirmed` sans test adversarial ni justification docs/chore | Verdict invalide, à reposer |
+| Test adversarial qui échoue à l'instant du push | `qa-reopen` (le bug doit être corrigé par le Dev) |
 
 ## Ce que tu ne fais pas
 

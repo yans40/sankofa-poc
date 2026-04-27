@@ -9,6 +9,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/engine/**'],
+      reporter: ['text', 'json-summary', 'html'],
       thresholds: {
         lines: 70,
         functions: 70,
