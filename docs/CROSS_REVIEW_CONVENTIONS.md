@@ -138,7 +138,7 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
 | Phase | Contenu | Statut |
 |---|---|---|
 | 0 — Conventions | Labels, branches, CLAUDE.md, PR template, ce doc | ✅ Implémentée |
-| 1 — Symétrie Cursor | Créer `dev-reviewer-cursor.md`, `qa-challenger-cursor.md`, `pm-readonly.md` | ⏳ À faire |
+| 1 — Symétrie Cursor | `.cursor/prompts/dev-reviewer-cursor.md`, `qa-challenger-cursor.md`, `pm-readonly.md` (remplace l'ancien `pm-agent.md` Cursor) | ✅ Implémentée |
 | 2 — Routage auto | Workflow `cross-review-router.yml` + branch protection | ⏳ À faire |
 | 3 — Verdicts parsés | Workflow `qa-verdict-parser.yml` + `docs/qa-history.md` | ⏳ À faire |
 | 4 — Tests adversariaux | Dossier `__tests__/adversarial/{claude,cursor}/` + coverage gate | ⏳ À faire |
