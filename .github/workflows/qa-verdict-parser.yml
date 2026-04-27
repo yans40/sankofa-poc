@@ -160,10 +160,13 @@ jobs:
             const historyVerdict = challengerVerdict || qaVerdict || 'qa-pending';
             const historyAgent = challengerVerdict ? 'challenger' : (qaAgent || 'unknown');
             const historyLine = `| ${new Date().toISOString()} | #${prNumber} | ${historyAgent} | ${historyVerdict} |`;
+            const isActionableVerdict = (qaVerdict && qaVerdict !== 'qa-pending') || !!challengerVerdict;
 
             core.setOutput('history_line', historyLine);
             core.setOutput('head_ref', pr.head.ref);
-            core.setOutput('found_verdict', qaVerdict || challengerVerdict ? 'true' : 'false');
+            core.setOutput('pr_number', String(prNumber));
+            core.setOutput('history_verdict', historyVerdict);
+            core.setOutput('found_verdict', isActionableVerdict ? 'true' : 'false');
 
       - name: Checkout PR branch
         if: steps.parse.outputs.found_verdict == 'true'
@@ -184,6 +187,11 @@ jobs:
           | Date (UTC) | PR | Agent | Verdict |
           |---|---|---|---|
           EOF
+          fi
+          LAST_LINE="$(awk 'NF { line=$0 } END { print line }' docs/qa-history.md)"
+          if [[ "$LAST_LINE" == *"| #${{ steps.parse.outputs.pr_number }} |"* && "$LAST_LINE" == *"| ${{ steps.parse.outputs.history_verdict }} |" ]]; then
+            echo "Latest entry already matches PR #${{ steps.parse.outputs.pr_number }} and verdict ${{ steps.parse.outputs.history_verdict }}."
+            exit 0
           fi
           echo "${{ steps.parse.outputs.history_line }}" >> docs/qa-history.md
 
