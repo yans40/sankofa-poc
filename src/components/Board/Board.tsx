@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { DndContext, type DragEndEvent, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { useGameStore } from '../../store/gameStore.js';
 import { BattlefieldUnit } from '../Card/CardComponent.js';
@@ -102,16 +103,18 @@ function Battlefield({ playerId }: { playerId: PlayerId }) {
           {isOwnSide ? 'Glisse tes unités ici' : 'Champ adverse vide'}
         </span>
       )}
-      {player.battlefield.map(unit => (
-        <BattlefieldUnit
-          key={unit.instanceId}
-          unit={unit}
-          isOwn={isOwnSide}
-          isSelected={isUnitSelected(unit)}
-          isTargetable={isUnitTargetable(unit)}
-          onClick={() => handleUnitClick(unit)}
-        />
-      ))}
+      <AnimatePresence mode="popLayout">
+        {player.battlefield.map(unit => (
+          <BattlefieldUnit
+            key={unit.instanceId}
+            unit={unit}
+            isOwn={isOwnSide}
+            isSelected={isUnitSelected(unit)}
+            isTargetable={isUnitTargetable(unit)}
+            onClick={() => handleUnitClick(unit)}
+          />
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
@@ -180,9 +183,15 @@ export function Board() {
           {/* Top bar */}
           <div className="flex items-center justify-between px-4 py-1 border-b border-gray-800 text-xs">
             <span className="text-gray-500">Tour {gameState.turn}</span>
-            <span className={`font-bold ${cycleBg[gameState.worldCycle]}`}>
+            <motion.span
+              key={gameState.worldCycle}
+              className={`inline-block font-bold ${cycleBg[gameState.worldCycle]}`}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
               ◆ {gameState.worldCycle.toUpperCase()}
-            </span>
+            </motion.span>
             <span className="text-gray-400 font-semibold">{activeLabel}</span>
           </div>
 
