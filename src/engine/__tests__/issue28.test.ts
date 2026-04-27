@@ -51,7 +51,7 @@ describe('Issue #28 — deathrattle on_death', () => {
     };
     state = processDeaths(state);
     expect(state.players.p1.battlefield).toHaveLength(1);
-    expect(state.players.p1.battlefield[0].card.id).toBe('Z02');
+    expect(state.players.p1.battlefield[0].card.id).toBe(z02.id);
   });
 
   it('Z09 token is justSummoned=true (no immediate attack)', () => {
