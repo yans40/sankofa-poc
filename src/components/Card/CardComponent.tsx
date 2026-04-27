@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 import type { Card, UnitInstance } from '../../engine/types.js';
 import { CardArtSVG } from '../../utils/cardArt.js';
 
@@ -82,13 +84,32 @@ interface BattlefieldUnitProps {
 export function BattlefieldUnit({ unit, isSelected, isTargetable, isOwn, onClick }: BattlefieldUnitProps) {
   const canAct = isOwn && !unit.hasAttackedThisTurn && !unit.justSummoned;
 
+  const prevHp = useRef(unit.currentHealth);
+  const [damageFlash, setDamageFlash] = useState(false);
+
+  useEffect(() => {
+    if (unit.currentHealth < prevHp.current) {
+      setDamageFlash(true);
+      const timer = window.setTimeout(() => setDamageFlash(false), 200);
+      prevHp.current = unit.currentHealth;
+      return () => window.clearTimeout(timer);
+    }
+    prevHp.current = unit.currentHealth;
+    return undefined;
+  }, [unit.currentHealth]);
+
   let ringClass = '';
   if (isSelected) ringClass = 'ring-2 ring-yellow-400 shadow-yellow-400/50 shadow-lg';
   else if (isTargetable) ringClass = 'ring-2 ring-red-400 shadow-red-400/50 shadow-lg animate-pulse';
   else if (canAct && isOwn) ringClass = 'ring-1 ring-green-400/60';
 
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ opacity: 0, scale: 0.85 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       onClick={onClick}
       title={`${unit.card.name}\n${unit.card.effects.map(e => e.description).join('\n')}`}
       className={[
@@ -100,6 +121,12 @@ export function BattlefieldUnit({ unit, isSelected, isTargetable, isOwn, onClick
       ].join(' ')}
       style={{ width: 72, minHeight: 90 }}
     >
+      {damageFlash && (
+        <span
+          className="pointer-events-none absolute inset-0 z-20 rounded-lg bg-red-500/50"
+          aria-hidden
+        />
+      )}
       {/* Spectral badge */}
       {unit.isSpectral && (
         <span className="absolute -top-2 right-0 text-purple-300 text-xs">✦</span>
@@ -129,7 +156,7 @@ export function BattlefieldUnit({ unit, isSelected, isTargetable, isOwn, onClick
         <span className="text-orange-400 font-bold text-sm">{unit.currentAttack}</span>
         <span className="text-green-400 font-bold text-sm">{unit.currentHealth}</span>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
