@@ -90,7 +90,13 @@ qa-confirmed
 
 Valeurs : `qa-confirmed` | `qa-escalate` | `qa-reopen`.
 
-> Le parsing automatique des balises est implémenté en Phase 3 (`.github/workflows/qa-verdict-parser.yml`). En attendant, les labels sont posés manuellement par les agents.
+Le parsing automatique des balises est implémenté en Phase 3 via
+`.github/workflows/qa-verdict-parser.yml`.
+
+Les verdicts parsés alimentent aussi un historique append-only dans `docs/qa-history.md`
+au format :
+
+`| Date (UTC) | PR | Agent | Verdict |`
 
 ---
 
@@ -141,7 +147,7 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
 | 0 — Conventions | Labels, branches, CLAUDE.md, PR template, ce doc | ✅ Implémentée |
 | 1 — Symétrie Cursor | `.cursor/prompts/dev-reviewer-cursor.md`, `qa-challenger-cursor.md`, `pm-readonly.md` (remplace l'ancien `pm-agent.md` Cursor) | ✅ Implémentée |
 | 2 — Routage auto | Workflow `cross-review-router.yml` + branch protection | ✅ Implémentée |
-| 3 — Verdicts parsés | Workflow `qa-verdict-parser.yml` + `docs/qa-history.md` | ⏳ À faire |
+| 3 — Verdicts parsés | Workflow `qa-verdict-parser.yml` + `docs/qa-history.md` | ✅ Implémentée |
 | 4 — Tests adversariaux | Dossier `__tests__/adversarial/{claude,cursor}/` + coverage gate | ✅ Implémentée |
 | 5 — Hooks Claude + dashboard | `.claude/hooks/` symétrique + `docs/CROSS_REVIEW_DASHBOARD.md` | ⏳ À faire |
 
