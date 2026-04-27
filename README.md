@@ -1,81 +1,82 @@
 # Sankofa: Rites of War — POC
 
-> A Hearthstone-inspired collectible card game rooted in African mythologies and cultures.
+> Jeu de cartes à collectionner (CCG) inspiré de Hearthstone, ancré dans les mythologies africaines.
 
-## Status
+## Prérequis
 
-**Phase :** POC (Proof of Concept)
-**Milestone en cours :** M1 — Engine Core
-**Stack :** Vite + React 18 + TypeScript strict + Zustand + Tailwind + Vitest
+- **Node.js** 20 ou supérieur
+- **npm** 10 ou supérieur
+- **Navigateur** : Chrome desktop (recommandé)
 
-## Quick start
+## Installation
 
 ```bash
+git clone https://github.com/yans40/sankofa-poc.git
+cd sankofa-poc
 npm install
-npm run dev          # lance Vite en mode dev
-npm test             # lance les tests Vitest
-npm run play-cli     # lance une partie en CLI (M1)
+```
+
+## Lancement
+
+```bash
+npm run dev
 ```
 
 Ouvrir [http://localhost:5173](http://localhost:5173) dans Chrome desktop.
+
+Le projet se lance en moins de 30 secondes sur une machine standard.
+
+## Comment jouer
+
+1. **Sélection de faction** — choisir Orishas ou Zoulou pour chaque joueur (écran d'accueil)
+2. **Mulligan** — remplacer jusqu'à 3 cartes de la main de départ
+3. **Tour de jeu** :
+   - Les cartes disponibles s'affichent dans la main (bas de l'écran)
+   - **Jouer une unité** : glisser-déposer la carte sur le plateau (zone de combat)
+   - **Jouer un sort / rituel** : cliquer sur la carte, puis cliquer sur la cible si demandé
+   - **Attaquer** : cliquer sur une unité alliée, puis cliquer sur une unité ennemie ou le héros adverse
+   - **Fin de tour** : cliquer sur le bouton "Fin de tour"
+4. **Victoire** — réduire les 30 points de vie du héros adverse à 0
+
+## Lancer les tests
+
+```bash
+npm test                          # suite complète (Vitest)
+npm run test:coverage             # avec rapport de couverture
+node scripts/check-coverage.mjs  # vérifie le seuil de couverture (>= 70 %)
+```
+
+## Architecture
+
+La structure complète est détaillée dans [`docs/POC_BRIEF.md`](docs/POC_BRIEF.md) §7.
+
+```
+sankofa-poc/
+├─ src/
+│  ├─ engine/        # moteur de règles pur TypeScript (sans React)
+│  ├─ data/          # cards.json, heroes.json
+│  ├─ store/         # état global Zustand
+│  ├─ components/    # composants React
+│  └─ hooks/
+├─ docs/
+│  ├─ POC_BRIEF.md   # brief produit — source de vérité
+│  └─ SPRINT_*.md    # plans de sprint
+└─ scripts/          # utilitaires CI (coverage, dashboard)
+```
+
+## Périmètre du POC
+
+✅ **Inclus :** mode 2 joueurs hot-seat, 2 factions (Orishas + Zoulou), 20 cartes, mécaniques signature (Autel, Rituels, Griot, Cycle du Monde), drag & drop, animations.
+
+❌ **Exclus :** backend, multijoueur en ligne, comptes utilisateurs, deck builder, IA, monétisation, mobile.
 
 ## Documentation
 
 | Fichier | Description |
 |---|---|
-| `CLAUDE.md` | Instructions pour Claude Code (lecture obligatoire au démarrage) |
-| `docs/POC_BRIEF.md` | **Brief produit complet** — source de vérité du périmètre |
-| `docs/RULEBOOK_v0.1.docx` | Règles complètes du jeu |
-| `docs/visual_references.html` | Mockups visuels des cartes |
-
-## Structure du projet
-
-```
-sankofa-poc/
-├─ CLAUDE.md              # Instructions pour Claude Code
-├─ README.md              # Ce fichier
-├─ docs/
-│  ├─ POC_BRIEF.md        # Le brief PM (16 sections, source de vérité)
-│  ├─ RULEBOOK_v0.1.docx  # Règles officielles
-│  └─ visual_references.html
-├─ src/
-│  ├─ engine/             # Moteur de règles pur (à implémenter en M1)
-│  ├─ data/               # cards.json, heroes.json
-│  ├─ store/              # Zustand
-│  ├─ components/         # React UI (à implémenter en M2)
-│  ├─ hooks/
-│  └─ utils/
-├─ public/
-│  └─ assets/             # Illustrations (placeholders en M3)
-└─ package.json           # à générer en M1
-```
-
-## Comment lancer Claude Code dans ce projet
-
-```bash
-cd sankofa-poc
-claude
-```
-
-Puis dans la session Claude Code :
-
-```
-Lis CLAUDE.md et docs/POC_BRIEF.md, puis exécute la Milestone 1
-(Engine Core) en suivant strictement le périmètre défini.
-```
-
-## Règles de contribution
-
-- TypeScript strict, pas de `any` non justifié
-- Tests Vitest obligatoires sur le moteur (coverage ≥ 70%)
-- Conventional Commits
-- Pas de scope creep : tout ce qui sort de `docs/POC_BRIEF.md` §4.1 va dans le backlog v0.2
-
-## Périmètre du POC en 30 secondes
-
-✅ **Inclus :** mode 2 joueurs hot-seat, 2 factions (Orishas + Zoulou), 20 cartes, mécaniques signature (Autel, Rituels, Griot, Cycle du Monde), drag & drop, animations basiques.
-
-❌ **Exclus :** backend, multijoueur en ligne, comptes utilisateurs, deck builder, IA, monétisation, mobile.
+| `CLAUDE.md` | Instructions pour Claude Code (agents, conventions) |
+| `docs/POC_BRIEF.md` | Brief produit complet — source de vérité |
+| `docs/DEV_QA_AGENT_WORKFLOW.md` | Workflow PM → Dev → QA |
 
 ## Licence
 
@@ -84,4 +85,5 @@ Lis CLAUDE.md et docs/POC_BRIEF.md, puis exécute la Milestone 1
 ## Auteurs
 
 - Yans — Product Owner
-- Claude Code — Lead Engineer
+- Claude Code — Lead Engineer / PM
+- Cursor — Dev collaborateur
