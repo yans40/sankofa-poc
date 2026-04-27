@@ -24,6 +24,7 @@ export type TargetSelector =
   | { scope: 'all_enemies' }
   | { scope: 'all_allies' }
   | { scope: 'random_enemy' }
+  | { scope: 'random_ally' }
   | { scope: 'choose_enemy' }
   | { scope: 'choose_ally' };
 
