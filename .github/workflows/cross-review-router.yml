@@ -11,6 +11,13 @@ permissions:
   contents: read
   issues: write
 
+# Serialize runs per PR to prevent race conditions on comment idempotence.
+# cancel-in-progress: false ensures all runs complete (the second run will
+# find the marker and skip posting a duplicate comment).
+concurrency:
+  group: cross-review-router-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
 jobs:
   # ───────────────────────────────────────────────────────────────────────────
   # Job 1 — Détecte l'auteur depuis le nom de branche et pose le label author:*
