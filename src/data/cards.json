@@ -247,7 +247,7 @@
       {
         "trigger": "on_turn_end",
         "description": "À la fin de votre tour : soigne une unité alliée de 2 PV",
-        "resolve": { "kind": "heal", "amount": 2, "target": { "scope": "random_enemy" } }
+        "resolve": { "kind": "heal", "amount": 2, "target": { "scope": "random_ally" } }
       }
     ],
     "flavorText": "Ses herbes guérissent les blessures du corps.",

@@ -390,18 +390,47 @@ function resolveEffect(
       return next;
     }
     case 'heal': {
-      const targetId = resolver.target.scope === 'self' ? playerId : opponentId;
-      const p = state.players[targetId];
-      return {
-        ...state,
-        players: {
-          ...state.players,
-          [targetId]: {
-            ...p,
-            heroHealth: Math.min(p.heroMaxHealth, p.heroHealth + resolver.amount),
+      if (resolver.amount <= 0) return state;
+
+      if (resolver.target.scope === 'self') {
+        const p = state.players[playerId];
+        return {
+          ...state,
+          players: {
+            ...state.players,
+            [playerId]: {
+              ...p,
+              heroHealth: Math.min(p.heroMaxHealth, p.heroHealth + resolver.amount),
+            },
           },
-        },
-      };
+        };
+      }
+
+      if (resolver.target.scope === 'random_ally') {
+        const p = state.players[playerId];
+        const candidates = p.battlefield.filter(u => u.currentHealth < u.maxHealth);
+        if (candidates.length === 0) return state;
+
+        const pick = candidates[Math.floor(Math.random() * candidates.length)];
+        const live = p.battlefield.find(u => u.instanceId === pick.instanceId);
+        if (!live || live.currentHealth <= 0) return state;
+
+        const newHealth = Math.min(live.maxHealth, live.currentHealth + resolver.amount);
+        return {
+          ...state,
+          players: {
+            ...state.players,
+            [playerId]: {
+              ...p,
+              battlefield: p.battlefield.map(u =>
+                u.instanceId === live.instanceId ? { ...u, currentHealth: newHealth } : u,
+              ),
+            },
+          },
+        };
+      }
+
+      return state;
     }
     case 'damage': {
       if (resolver.target.scope === 'all_enemies') {
