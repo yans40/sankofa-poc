@@ -1,7 +1,7 @@
 # Cross-review Dashboard — Sankofa POC
 
 > Généré par `scripts/generate-dashboard.mjs`. Source : GitHub API + `docs/qa-history.md`.
-> Dernière mise à jour : 2026-04-27T20:06:51.172Z
+> Dernière mise à jour : 2026-04-27T23:20:41.982Z
 
 ---
 
@@ -9,8 +9,8 @@
 
 | Camp | PR ouvertes | PR mergées | Verdicts QA posés | Tests adversariaux ajoutés |
 |---|---|---|---|---|
-| Claude | 0 | 5 | 6 | 1 |
-| Cursor | 0 | 4 | 0 | 0 |
+| Claude | 1 | 6 | 7 | 1 |
+| Cursor | 1 | 5 | 0 | 0 |
 
 ---
 
@@ -18,7 +18,8 @@
 
 | # | Titre | Auteur | CI | Reviewer adverse | Verdict QA | Bloqueurs |
 |---|---|---|---|---|---|---|
-| — | Aucune PR ouverte | — | — | — | — | — |
+| #38 | docs(readme): #30 — README complet (prér | claude | ❌ | ⏳ pending | ⏳ pending | review manquante, verdict QA manquant, CI rouge |
+| #37 | feat(ui): FactionSelect polish + Vercel  | cursor | ⏳ | `review:claude-approved` | `verdict:qa-confirmed` | — |
 
 ---
 
@@ -26,6 +27,7 @@
 
 | Date (UTC) | PR | Agent | Verdict |
 |---|---|---|---|
+| 2026-04-27T23:12:10.164Z | #36 | challenger | qa-confirmed |
 | 2026-04-27T20:00:40.016Z | #35 | challenger | qa-confirmed |
 | 2026-04-27T19:45:27.166Z | #34 | challenger | qa-confirmed |
 | 2026-04-27T19:24:20.761Z | #33 | challenger | qa-confirmed |
