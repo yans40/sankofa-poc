@@ -1,3 +1,12 @@
+> ⚠️ **Design futur — non applicable au POC v1**
+>
+> Ce document décrit une vision d'extension future de Sankofa (faction Ashanti, mécaniques additionnelles).
+> Il n'est pas une spécification implémentable. Pour toute décision technique sur le POC en cours,
+> la source de vérité reste **`docs/POC_BRIEF.md`** (Orishas + Zoulou, 20 cartes, périmètre v1).
+> Tout écart entre ce document et `POC_BRIEF.md` se résout en faveur de `POC_BRIEF.md`.
+
+---
+
 # Faction Ashanti — Design Document v0.2
 
 > **Source d'inspiration historique :** *La Confédération Ashanti — L'Empire de l'Or et de la Guerre* (NotebookLM, chronologie 5e siècle → 1948)
@@ -238,6 +247,10 @@ Pour rester équilibrée, la faction Ashanti a des faiblesses identifiables :
 
 ### 9.1 Modifications à apporter à `cards.json`
 
+> 🧪 **Section exploratoire — non normative**
+> Le code et les types ci-dessous sont une esquisse de design. Ils peuvent diverger du moteur actuel
+> (`src/engine/`) en termes de naming, signatures et invariants. Ne pas implémenter tel quel.
+
 Ajouter 12 entrées suivant le schéma `Card` du brief §8.1, avec :
 
 ```typescript
@@ -246,6 +259,10 @@ keywords: [...] // ajouter 'kotoko', 'sika', 'sacred' aux Keyword existants
 ```
 
 ### 9.2 Modifications du moteur
+
+> 🧪 **Section exploratoire — non normative**
+> Le code et les types ci-dessous sont une esquisse de design. Ils peuvent diverger du moteur actuel
+> (`src/engine/`) en termes de naming, signatures et invariants. Ne pas implémenter tel quel.
 
 Ajouter dans `src/engine/`:
 

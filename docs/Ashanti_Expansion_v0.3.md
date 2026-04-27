@@ -1,3 +1,12 @@
+> ⚠️ **Design futur — non applicable au POC v1**
+>
+> Ce document décrit une vision d'extension future de Sankofa (faction Ashanti, mécaniques additionnelles).
+> Il n'est pas une spécification implémentable. Pour toute décision technique sur le POC en cours,
+> la source de vérité reste **`docs/POC_BRIEF.md`** (Orishas + Zoulou, 20 cartes, périmètre v1).
+> Tout écart entre ce document et `POC_BRIEF.md` se résout en faveur de `POC_BRIEF.md`.
+
+---
+
 # Ashanti — Extension v0.3 « L'Empire de l'Or »
 
 > Extension narrative et mécanique de la faction Ashanti, ajoutant **10 cartes** (4 Communes / 3 Rares / 2 Épiques / 1 Légendaire) tirées directement de la chronologie historique 1689-1948.
@@ -186,6 +195,10 @@ L'extension renforce la faction sans la rendre cassée :
 
 ### 7.1 Modifications à apporter à `cards.json`
 
+> 🧪 **Section exploratoire — non normative**
+> Le code et les types ci-dessous sont une esquisse de design. Ils peuvent diverger du moteur actuel
+> (`src/engine/`) en termes de naming, signatures et invariants. Ne pas implémenter tel quel.
+
 Ajouter 11 entrées (A13-A22 + A98) suivant le schéma `Card`. Nouveaux flags requis :
 
 ```typescript
@@ -203,6 +216,10 @@ type EffectTrigger =
 
 ### 7.2 Nouvelles actions du moteur
 
+> 🧪 **Section exploratoire — non normative**
+> Le code et les types ci-dessous sont une esquisse de design. Ils peuvent diverger du moteur actuel
+> (`src/engine/`) en termes de naming, signatures et invariants. Ne pas implémenter tel quel.
+
 ```typescript
 type GameAction =
   | // ... actions existantes
@@ -211,6 +228,10 @@ type GameAction =
 ```
 
 ### 7.3 Modifications du DSL d'effets
+
+> 🧪 **Section exploratoire — non normative**
+> Le code et les types ci-dessous sont une esquisse de design. Ils peuvent diverger du moteur actuel
+> (`src/engine/`) en termes de naming, signatures et invariants. Ne pas implémenter tel quel.
 
 ```typescript
 // Ajouter au EffectResolver

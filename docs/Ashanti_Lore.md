@@ -1,3 +1,12 @@
+> ⚠️ **Design futur — non applicable au POC v1**
+>
+> Ce document décrit une vision d'extension future de Sankofa (faction Ashanti, mécaniques additionnelles).
+> Il n'est pas une spécification implémentable. Pour toute décision technique sur le POC en cours,
+> la source de vérité reste **`docs/POC_BRIEF.md`** (Orishas + Zoulou, 20 cartes, périmètre v1).
+> Tout écart entre ce document et `POC_BRIEF.md` se résout en faveur de `POC_BRIEF.md`.
+
+---
+
 # Ashanti — Bible Narrative
 ## *L'Or, le Sang, et la Mémoire*
 
