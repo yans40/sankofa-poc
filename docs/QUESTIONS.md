@@ -31,7 +31,7 @@ Chaque question suit ce gabarit :
 ## Questions héritées du brief (à trancher avant Milestone 1)
 
 ### Q-001 — Hot-seat : protection visuelle entre joueurs ?
-**Statut :** 🟡 EN DISCUSSION
+**Statut :** 🟢 TRANCHÉE
 **Posée par :** PO (dans POC_BRIEF.md §14.1)
 **Contexte :** Quand le tour passe du Joueur 1 au Joueur 2, l'adversaire doit-il jamais voir ma main ?
 **Options envisagées :**
