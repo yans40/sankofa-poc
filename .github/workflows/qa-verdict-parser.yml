@@ -1,0 +1,209 @@
+name: QA Verdict Parser
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  parse-verdict:
+    if: github.event_name == 'pull_request' || github.event.issue.pull_request != null
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse verdict from PR body and comments
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const getAgentFromText = (text, markerIndex, fallbackAuthor) => {
+              const scopedText = markerIndex > 0 ? text.slice(0, markerIndex) : text;
+              const markerMatch = scopedText.match(/<!--\s*agent:([a-z0-9-]+)\s*-->/i);
+              if (markerMatch) {
+                const marker = markerMatch[1].toLowerCase();
+                if (marker.includes('cursor')) return 'cursor';
+                if (marker.includes('claude')) return 'claude';
+              }
+
+              const h2Match = scopedText.match(/##\s*QA\s*(Cursor|Claude)\s*[—-]\s*Verdict/i);
+              if (h2Match) return h2Match[1].toLowerCase();
+
+              return fallbackAuthor.includes('cursor') ? 'cursor' : 'claude';
+            };
+
+            const readQaVerdict = (text) => {
+              const regex = /<!--\s*verdict:start\s*-->\s*([a-z-]+)\s*<!--\s*verdict:end\s*-->/im;
+              const match = regex.exec(text || '');
+              if (!match) return null;
+              return {
+                value: match[1].toLowerCase(),
+                markerIndex: match.index ?? 0,
+              };
+            };
+
+            const readChallengerVerdict = (text) => {
+              const regex = /<!--\s*challenger-verdict:start\s*-->\s*([a-z-]+)\s*<!--\s*challenger-verdict:end\s*-->/im;
+              const match = regex.exec(text || '');
+              if (!match) return null;
+              return match[1].toLowerCase();
+            };
+
+            let prNumber;
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.pull_request.number;
+            } else {
+              prNumber = context.payload.issue.number;
+            }
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: prNumber,
+            });
+
+            const { data: issueComments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const qaCandidates = [];
+            qaCandidates.push({
+              source: 'pr-body',
+              body: pr.body || '',
+              author: pr.user.login.toLowerCase(),
+            });
+            for (const c of issueComments) {
+              qaCandidates.push({
+                source: `comment-${c.id}`,
+                body: c.body || '',
+                author: (c.user?.login || '').toLowerCase(),
+              });
+            }
+
+            let qaVerdict = null;
+            let qaAgent = null;
+            let qaSource = null;
+            for (let i = qaCandidates.length - 1; i >= 0; i -= 1) {
+              const c = qaCandidates[i];
+              const parsed = readQaVerdict(c.body);
+              if (!parsed) continue;
+              qaVerdict = parsed.value;
+              qaAgent = getAgentFromText(c.body, parsed.markerIndex, c.author);
+              qaSource = c.source;
+              break;
+            }
+
+            let challengerVerdict = null;
+            for (let i = qaCandidates.length - 1; i >= 0; i -= 1) {
+              const c = qaCandidates[i];
+              const parsed = readChallengerVerdict(c.body);
+              if (!parsed) continue;
+              challengerVerdict = parsed;
+              break;
+            }
+
+            const qaLabelMap = {
+              'qa-passed': 'verdict:qa-passed',
+              'qa-passed-with-risks': 'verdict:qa-passed-with-risks',
+              'qa-blocked': 'verdict:qa-blocked',
+            };
+            const challengerLabelMap = {
+              'qa-confirmed': 'verdict:qa-confirmed',
+              'qa-escalate': 'verdict:qa-escalate',
+              'qa-reopen': 'verdict:qa-blocked',
+            };
+
+            const verdictLabels = [
+              'verdict:qa-passed',
+              'verdict:qa-passed-with-risks',
+              'verdict:qa-blocked',
+              'verdict:qa-confirmed',
+              'verdict:qa-escalate',
+            ];
+
+            const currentLabels = pr.labels.map((l) => l.name);
+            const labelsToRemove = currentLabels.filter((name) => verdictLabels.includes(name));
+            if (labelsToRemove.length > 0) {
+              for (const labelName of labelsToRemove) {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: prNumber,
+                  name: labelName,
+                }).catch(() => {});
+              }
+            }
+
+            const labelsToAdd = [];
+            if (qaVerdict && qaLabelMap[qaVerdict]) labelsToAdd.push(qaLabelMap[qaVerdict]);
+            if (challengerVerdict && challengerLabelMap[challengerVerdict]) labelsToAdd.push(challengerLabelMap[challengerVerdict]);
+
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: prNumber,
+                labels: [...new Set(labelsToAdd)],
+              });
+            }
+
+            const historyVerdict = challengerVerdict || qaVerdict || 'qa-pending';
+            const historyAgent = challengerVerdict ? 'challenger' : (qaAgent || 'unknown');
+            const historyLine = `| ${new Date().toISOString()} | #${prNumber} | ${historyAgent} | ${historyVerdict} |`;
+            const isActionableVerdict = (qaVerdict && qaVerdict !== 'qa-pending') || !!challengerVerdict;
+
+            core.setOutput('history_line', historyLine);
+            core.setOutput('head_ref', pr.head.ref);
+            core.setOutput('pr_number', String(prNumber));
+            core.setOutput('history_verdict', historyVerdict);
+            core.setOutput('found_verdict', isActionableVerdict ? 'true' : 'false');
+
+      - name: Checkout PR branch
+        if: steps.parse.outputs.found_verdict == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.parse.outputs.head_ref }}
+
+      - name: Append docs/qa-history.md
+        if: steps.parse.outputs.found_verdict == 'true'
+        run: |
+          mkdir -p docs
+          if [ ! -f docs/qa-history.md ]; then
+            cat <<'EOF' > docs/qa-history.md
+          # QA Verdict History
+
+          > Append-only log generated by `.github/workflows/qa-verdict-parser.yml`.
+
+          | Date (UTC) | PR | Agent | Verdict |
+          |---|---|---|---|
+          EOF
+          fi
+          LAST_LINE="$(awk 'NF { line=$0 } END { print line }' docs/qa-history.md)"
+          if [[ "$LAST_LINE" == *"| #${{ steps.parse.outputs.pr_number }} |"* && "$LAST_LINE" == *"| ${{ steps.parse.outputs.history_verdict }} |" ]]; then
+            echo "Latest entry already matches PR #${{ steps.parse.outputs.pr_number }} and verdict ${{ steps.parse.outputs.history_verdict }}."
+            exit 0
+          fi
+          echo "${{ steps.parse.outputs.history_line }}" >> docs/qa-history.md
+
+      - name: Commit history update
+        if: steps.parse.outputs.found_verdict == 'true'
+        run: |
+          if git diff --quiet docs/qa-history.md; then
+            echo "No qa-history changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/qa-history.md
+          git commit -m "chore(ci): append qa-history for PR #${{ github.event.pull_request.number || github.event.issue.number }}"
+          git push origin HEAD:${{ steps.parse.outputs.head_ref }}
