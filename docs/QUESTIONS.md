@@ -5,7 +5,7 @@ Ce fichier contient les questions remontées par l'équipe technique au Product 
 ## Légende des statuts
 
 - 🔴 **OUVERTE** — bloque le développement, attend une décision
-- 🟡 **EN DISCUSSION** — réponse partielle, à affiner
+- 🟡 **EN DISCUSSION / DIFFÉRÉE** — réponse partielle ou délibérément reportée
 - 🟢 **TRANCHÉE** — décision prise, archivée pour traçabilité
 - ⚪ **OBSOLÈTE** — la question n'est plus pertinente
 
@@ -31,14 +31,14 @@ Chaque question suit ce gabarit :
 ## Questions héritées du brief (à trancher avant Milestone 1)
 
 ### Q-001 — Hot-seat : protection visuelle entre joueurs ?
-**Statut :** 🟡 EN DISCUSSION
+**Statut :** 🟢 TRANCHÉE
 **Posée par :** PO (dans POC_BRIEF.md §14.1)
 **Contexte :** Quand le tour passe du Joueur 1 au Joueur 2, l'adversaire doit-il jamais voir ma main ?
 **Options envisagées :**
   1. Aucune protection : la main reste toujours affichée
   2. Écran "Joueur 2 — clique pour révéler ta main" entre chaque transition
 **Recommandation tech :** Option 2 (recommandée par le PO)
-**Décision PO :** ✅ Option 2 appliquée en M2 — écran "Joueur X, clique pour révéler ta main"
+**Décision PO :** ✅ Option 2 appliquée en M2 — `HotSeatScreen.tsx` implémenté, écran "Joueur X, clique pour révéler ta main" actif.
 
 ### Q-002 — Illustrations placeholders
 **Statut :** 🟢 TRANCHÉE
@@ -60,21 +60,25 @@ Chaque question suit ce gabarit :
 **Décision PO :** Option 1 appliquée (recommandation PO dans brief §14.3). Implémenté en M1 dans `resolveReadyRituals()` appelé à chaque aurore.
 
 ### Q-004 — URL et hébergement de la démo
-**Statut :** 🔴 OUVERTE
-**Contexte :** Où déployer le POC pour démonstrations externes ?
+**Statut :** 🟡 DIFFÉRÉE
+**Posée par :** Tech
+**Date :** 2026-04-27
+**Contexte :** Où déployer le POC pour démonstrations externes ? Bloquait l'issue #31 (déploiement Vercel).
 **Options envisagées :**
   1. Vercel (gratuit, déploiement Git)
   2. Netlify (gratuit, équivalent)
   3. Local uniquement
 **Recommandation tech :** Vercel
-**Décision PO :** _(à confirmer avant M3)_
+**Décision PO :** Décision délibérément différée. La partie polish FactionSelect (#31) peut avancer sans attendre ; seule la mise en ligne effective est bloquée. Le PO tranchera avant la phase de déploiement. _(Source : session PM 2026-04-27)_
 
 ### Q-005 — Visibilité du repo
-**Statut :** 🔴 OUVERTE
-**Contexte :** Le repo Git est-il public ou privé ?
+**Statut :** 🟢 TRANCHÉE
+**Posée par :** Tech
+**Date :** 2026-04-27
+**Contexte :** Le repo Git est-il public ou privé ? Bloquait tout déploiement public.
 **Recommandation tech :** Privé jusqu'au pitch officiel
-**Décision PO :** _(à confirmer)_
+**Décision PO :** ✅ Repo **privé**. À reconsidérer si une démo publique devient nécessaire pour le pitch. _(Source : session PM 2026-04-27)_
 
 ---
 
-*Questions Q-001 et Q-002 reportées à M2 (impact uniquement sur l'UI). Q-003 tranchée et implémentée.*
+*Q-001, Q-002, Q-003 : tranchées et implémentées. Q-004 : différée (décision PO attendue avant déploiement). Q-005 : tranchée (repo privé).*
