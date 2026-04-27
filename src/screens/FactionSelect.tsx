@@ -49,7 +49,7 @@ function FactionCard({
       onClick={onSelect}
       className={[
         'flex flex-col gap-3 rounded-2xl border-2 p-6 text-left transition-all duration-200',
-        'bg-gray-900/90 backdrop-blur-sm w-full max-w-[260px] min-h-[240px]',
+        'bg-gray-900/90 w-full max-w-[260px] min-h-[240px]',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950',
         selected ? `${info.borderSelected} shadow-xl ring-1 ring-white/10` : idleBorder,
       ].join(' ')}
