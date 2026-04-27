@@ -25,8 +25,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit tests
-        run: npm run test -- --run --coverage
+      - name: Unit tests + coverage
+        run: npm run test:coverage
+
+      - name: Coverage gate
+        run: node scripts/check-coverage.mjs
 
       - name: Build
         run: npm run build
