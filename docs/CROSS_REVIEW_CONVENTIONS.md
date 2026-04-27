@@ -118,8 +118,9 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
    └─ Crée feature/claude/<slug> ou feature/cursor/<slug>
    └─ Implémente, push
 3. PR ouverte
-   └─ Auto-label author:* (Phase 2) ou manuel
-   └─ Cross-review-router assigne le reviewer adverse
+   └─ Auto-label author:* via `cross-review-router.yml` (branch name → label)
+   └─ Commentaire de routing posé automatiquement avec les reviewers attendus
+   └─ Status check `cross-review-approved` activé (bloquant si branch protection activée — voir `docs/BRANCH_PROTECTION.md`)
 4. Reviewer adverse audite le diff
    └─ Pose review:<reviewer>-approved ou review:changes-requested
 5. QA initial (Claude ou Cursor selon convention de l'équipe)
@@ -139,7 +140,7 @@ Côté Cursor, le prompt `.cursor/prompts/pm-readonly.md` (créé en Phase 1) n'
 |---|---|---|
 | 0 — Conventions | Labels, branches, CLAUDE.md, PR template, ce doc | ✅ Implémentée |
 | 1 — Symétrie Cursor | `.cursor/prompts/dev-reviewer-cursor.md`, `qa-challenger-cursor.md`, `pm-readonly.md` (remplace l'ancien `pm-agent.md` Cursor) | ✅ Implémentée |
-| 2 — Routage auto | Workflow `cross-review-router.yml` + branch protection | ⏳ À faire |
+| 2 — Routage auto | Workflow `cross-review-router.yml` + branch protection | ✅ Implémentée |
 | 3 — Verdicts parsés | Workflow `qa-verdict-parser.yml` + `docs/qa-history.md` | ⏳ À faire |
 | 4 — Tests adversariaux | Dossier `__tests__/adversarial/{claude,cursor}/` + coverage gate | ⏳ À faire |
 | 5 — Hooks Claude + dashboard | `.claude/hooks/` symétrique + `docs/CROSS_REVIEW_DASHBOARD.md` | ⏳ À faire |

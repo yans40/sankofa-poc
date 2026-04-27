@@ -1,0 +1,168 @@
+name: Cross-review Router
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+    branches:
+      - "**"
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: write
+
+jobs:
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 1 — Détecte l'auteur depuis le nom de branche et pose le label author:*
+  # ───────────────────────────────────────────────────────────────────────────
+  detect-author:
+    runs-on: ubuntu-latest
+    outputs:
+      author: ${{ steps.detect.outputs.author }}
+    steps:
+      - name: Detect author from branch name and apply label
+        id: detect
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = context.payload.pull_request.head.ref;
+            const prNumber = context.payload.pull_request.number;
+
+            async function hasLabel(label) {
+              const { data: labels } = await github.rest.issues.listLabelsOnIssue({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+              });
+              return labels.some(l => l.name === label);
+            }
+
+            async function addLabel(label) {
+              if (await hasLabel(label)) {
+                console.log(`Label "${label}" already present — skipping.`);
+                return;
+              }
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: [label],
+              });
+              console.log(`Label "${label}" applied.`);
+            }
+
+            if (/^feature\/claude\//.test(branch)) {
+              await addLabel('author:claude');
+              core.setOutput('author', 'claude');
+            } else if (/^feature\/cursor\//.test(branch)) {
+              await addLabel('author:cursor');
+              core.setOutput('author', 'cursor');
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: '❌ Branche hors convention. Format attendu : `feature/{claude,cursor}/<slug>`. Voir docs/CROSS_REVIEW_CONVENTIONS.md §2.',
+              });
+              core.setFailed(`Branch "${branch}" does not follow naming convention feature/{claude,cursor}/<slug>.`);
+            }
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 2 — Poste le commentaire de routing (idempotent — une seule fois)
+  # ───────────────────────────────────────────────────────────────────────────
+  post-routing-comment:
+    needs: detect-author
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post routing comment (idempotent)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const author = '${{ needs.detect-author.outputs.author }}';
+            const adversaire = author === 'claude' ? 'cursor' : 'claude';
+            const prNumber = context.payload.pull_request.number;
+            const marker = '<!-- cross-review-router -->';
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            if (comments.some(c => c.body.startsWith(marker))) {
+              console.log('Routing comment already posted — skipping.');
+              return;
+            }
+
+            const body = [
+              marker,
+              '## Cross-review routing',
+              '',
+              `**Provenance** : author:${author}`,
+              '',
+              '**Reviewers attendus** :',
+              `- Dev Reviewer adverse → label \`review:${adversaire}-approved\``,
+              `- QA Challenger adverse → balise \`<!-- challenger-verdict:start -->qa-confirmed<!-- challenger-verdict:end -->\` puis label \`verdict:qa-confirmed\``,
+              '',
+              'Cette PR ne pourra pas être mergée tant que :',
+              '- [ ] CI `PR Checks` verte',
+              `- [ ] Label \`review:${adversaire}-approved\` posé`,
+              '- [ ] Label `verdict:qa-confirmed` (ou `verdict:qa-passed` minimum) posé',
+              '',
+              'Voir docs/CROSS_REVIEW_CONVENTIONS.md §3.',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body,
+            });
+            console.log('Routing comment posted.');
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Job 3 — Status check bloquant : cross-review complète ?
+  # S'exécute à chaque labeled/unlabeled pour se mettre à jour.
+  # ───────────────────────────────────────────────────────────────────────────
+  cross-review-approved:
+    needs: detect-author
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check cross-review labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            const labelNames = pr.labels.map(l => l.name);
+
+            const isClaudePR = labelNames.includes('author:claude');
+            const isCursorPR = labelNames.includes('author:cursor');
+
+            if (!isClaudePR && !isCursorPR) {
+              core.setFailed('Label author:claude ou author:cursor manquant — impossible de déterminer le reviewer adverse.');
+              return;
+            }
+
+            const reviewLabel = isClaudePR ? 'review:cursor-approved' : 'review:claude-approved';
+            const qaLabels = ['verdict:qa-confirmed', 'verdict:qa-passed', 'verdict:qa-passed-with-risks'];
+
+            const hasReview = labelNames.includes(reviewLabel);
+            const hasQA = qaLabels.some(l => labelNames.includes(l));
+
+            if (!hasReview || !hasQA) {
+              const missing = [];
+              if (!hasReview) missing.push(`\`${reviewLabel}\``);
+              if (!hasQA) missing.push('un verdict QA (`verdict:qa-confirmed` / `verdict:qa-passed` / `verdict:qa-passed-with-risks`)');
+              core.setFailed(`Cross-review incomplete — labels manquants : ${missing.join(', ')}. Voir le commentaire de routing.`);
+            } else {
+              console.log('Cross-review complete ✅');
+            }
