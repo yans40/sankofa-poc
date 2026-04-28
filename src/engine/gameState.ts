@@ -97,6 +97,55 @@ export function getCardById(id: string): Card | undefined {
   return allCards.find(c => c.id === id);
 }
 
+/** Builds a fresh GameState from pre-built deck arrays (used by the run mode). */
+export function buildGameStateFromDecks(
+  p1Faction: 'orisha' | 'zulu',
+  p1DeckCards: Card[],
+  p1HeroHp: number,
+  p1HeroMaxHp: number,
+  p2Faction: 'orisha' | 'zulu',
+  p2DeckCards: Card[],
+): GameState {
+  function buildFromCards(id: PlayerId, faction: 'orisha' | 'zulu', cards: Card[], heroHp: number, heroMaxHp: number): PlayerState {
+    const heroData = allHeroes.find(h => h.faction === faction);
+    if (!heroData) throw new Error(`Hero not found for faction ${faction}`);
+    return {
+      id,
+      hero: { ...heroData, type: 'hero' },
+      heroHealth: heroHp,
+      heroMaxHealth: heroMaxHp,
+      heroPowerUsedThisTurn: false,
+      heroAttack: 0,
+      heroDivineShield: false,
+      heroWeaponCharges: 0,
+      energy: 0,
+      maxEnergy: 0,
+      hand: cards.slice(0, 3),
+      deck: cards.slice(3),
+      battlefield: [],
+      altar: [],
+      rituals: [],
+      exile: [],
+      fatigueDamage: 0,
+      griotState: emptyGriotState(),
+    };
+  }
+
+  return {
+    players: {
+      p1: buildFromCards('p1', p1Faction, p1DeckCards, p1HeroHp, p1HeroMaxHp),
+      p2: buildFromCards('p2', p2Faction, p2DeckCards, 30, 30),
+    },
+    activePlayerId: 'p1',
+    turn: 1,
+    phase: 'mulligan',
+    worldCycle: 'dawn',
+    winner: null,
+    log: [{ turn: 1, phase: 'mulligan', actor: 'system', message: 'La partie commence. Phase de Mulligan.', timestamp: Date.now() }],
+    mulliganDone: { p1: false, p2: false },
+  };
+}
+
 export function addLog(
   state: GameState,
   actor: GameState['log'][number]['actor'],
