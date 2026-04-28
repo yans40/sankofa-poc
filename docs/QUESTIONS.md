@@ -81,4 +81,66 @@ Chaque question suit ce gabarit :
 
 ---
 
-*Q-001, Q-002, Q-003 : tranchées et implémentées. Q-004 : différée (décision PO attendue avant déploiement). Q-005 : tranchée (repo privé).*
+---
+
+## Questions M4 — Voyage de Sankofa
+
+### Q-006 — Soin partiel entre combats : montant fixe ou pourcentage ?
+**Statut :** 🔴 OUVERTE
+**Posée par :** Claude Code (PM)
+**Date :** 2026-04-28
+**Contexte :** Entre deux combats d'une run, le héros récupère des PV. Quel montant ?
+**Options envisagées :**
+  1. +10 PV fixe (plafonné à `heroMaxHealth`) — simple, prévisible
+  2. +20 % des PV max arrondi — proportionnel mais moins lisible
+**Recommandation tech :** Option 1 (+10 fixe).
+**Décision PO :** (à remplir)
+**Impact :** Ne bloque pas le ticket engine ; défaut appliqué : +10 fixe.
+
+---
+
+### Q-007 — Carte ajoutée entre combats : doublons autorisés ?
+**Statut :** 🔴 OUVERTE
+**Posée par :** Claude Code (PM)
+**Date :** 2026-04-28
+**Contexte :** Les 3 propositions de cartes entre combats peuvent-elles inclure une carte déjà présente dans le deck ?
+**Options envisagées :**
+  1. Oui (pas de filtre) — simplicité maximale
+  2. Non (exclure les cartes déjà à 3 copies)
+  3. Non (exclure strictement tout doublon)
+**Recommandation tech :** Option 1 pour M4.
+**Décision PO :** (à remplir)
+**Impact :** Ne bloque pas ; défaut : Option 1.
+
+---
+
+### Q-008 — Difficulté croissante : deck ou score IA ?
+**Statut :** 🔴 OUVERTE
+**Posée par :** Claude Code (PM)
+**Date :** 2026-04-28
+**Contexte :** Comment rendre les 3 combats de difficulté croissante ?
+**Options envisagées :**
+  1. Decks adverses prédéfinis de plus en plus solides — IA identique
+  2. Score heuristique IA augmenté (multiplicateur) — même deck
+  3. Les deux
+**Recommandation tech :** Option 1 — ne pas tweaker l'heuristique à ce stade.
+**Décision PO :** (à remplir)
+**Impact :** Bloque la création des 3 decks adverses. Défaut : Option 1.
+
+---
+
+### Q-009 — Écran après défaite lors d'une run ?
+**Statut :** 🔴 OUVERTE
+**Posée par :** Claude Code (PM)
+**Date :** 2026-04-28
+**Contexte :** Quand le héros tombe à 0 PV avant la fin des 3 combats, que voit le joueur ?
+**Options envisagées :**
+  1. Retour direct à FactionSelect
+  2. Écran « Défaite » avec stats + bouton Rejouer
+**Recommandation tech :** Option 2 — favorise le replay.
+**Décision PO :** (à remplir)
+**Impact :** Bloque le ticket `[ux] Écran carte du voyage + victoire/défaite`. Défaut : Option 2.
+
+---
+
+*Q-001 à Q-003 : tranchées. Q-004 : différée. Q-005 : tranchée. Q-006 à Q-009 : ouvertes M4 — défauts proposés consignés ci-dessus, démarrage engine possible sans arbitrage PO.*
