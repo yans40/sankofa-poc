@@ -1,7 +1,7 @@
 # Cross-review Dashboard — Sankofa POC
 
 > Généré par `scripts/generate-dashboard.mjs`. Source : GitHub API + `docs/qa-history.md`.
-> Dernière mise à jour : 2026-04-28T07:34:45.341Z
+> Dernière mise à jour : 2026-04-28T08:07:34.005Z
 
 ---
 
@@ -9,7 +9,7 @@
 
 | Camp | PR ouvertes | PR mergées | Verdicts QA posés | Tests adversariaux ajoutés |
 |---|---|---|---|---|
-| Claude | 0 | 8 | 10 | 1 |
+| Claude | 0 | 9 | 10 | 1 |
 | Cursor | 0 | 6 | 0 | 0 |
 
 ---
