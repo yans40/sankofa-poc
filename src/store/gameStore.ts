@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import type { GameState, GameAction, PlayerId } from '../engine/types.js';
 import { initialGameState } from '../engine/gameState.js';
 import { applyAction } from '../engine/reducers.js';
+import type { RunState } from '../engine/run/runState.js';
+import { selectCard } from '../engine/run/runReducer.js';
 
 export type SelectionMode =
   | { kind: 'none' }
@@ -18,11 +20,13 @@ interface GameStore {
   p2Faction: 'orisha' | 'zulu';
   screen: 'faction_select' | 'mulligan' | 'hotseat' | 'game' | 'gameover';
   hotSeatPending: PlayerId | null;
+  run: RunState | null;
 
   startGame: (p1: 'orisha' | 'zulu', p2: 'orisha' | 'zulu') => void;
   dispatch: (action: GameAction) => void;
   setSelection: (mode: SelectionMode) => void;
   confirmHotSeat: () => void;
+  selectRunCard: (cardId: string) => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -32,6 +36,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   p2Faction: 'zulu',
   screen: 'faction_select',
   hotSeatPending: null,
+  run: null,
 
   startGame: (p1, p2) => {
     const state = initialGameState(p1, p2);
@@ -64,5 +69,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   confirmHotSeat: () => {
     set({ screen: 'game', hotSeatPending: null });
+  },
+
+  selectRunCard: (cardId) => {
+    const run = get().run;
+    if (!run || run.phase !== 'card_selection') return;
+    const nextRun = selectCard(run, cardId);
+    set({ run: nextRun });
   },
 }));

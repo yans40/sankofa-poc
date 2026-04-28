@@ -11,6 +11,7 @@ export default function App() {
   if (screen === 'faction_select') return <FactionSelect />;
   if (screen === 'mulligan')      return <MulliganScreen />;
   if (screen === 'hotseat')       return <HotSeatScreen />;
+  // TODO #42: route run phases (card_selection/victory/defeat) to dedicated run screens.
   if (screen === 'game')          return <Board />;
   if (screen === 'gameover')      return <VictoryScreen />;
 
