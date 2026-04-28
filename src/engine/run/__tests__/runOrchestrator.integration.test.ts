@@ -7,6 +7,7 @@ import { startCombat, selectCard } from '../runReducer.js';
 import { applyCombatTurn } from '../runOrchestrator.js';
 import { generateLegalMoves } from '../../ai/moveGenerator.js';
 import { applyAction } from '../../reducers.js';
+import * as ReducersModule from '../../reducers.js';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -75,6 +76,30 @@ describe('applyCombatTurn — unit', () => {
 
     expect(() => applyCombatTurn(run, { type: 'END_TURN', playerId: 'p1' }, throwingAi)).not.toThrow();
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AI threw'), expect.any(Error));
+  });
+
+  it('AI illegal action guard: applyAction throws during AI action loop, does not crash', () => {
+    const run = startCombat(createRun('orisha', 1));
+    const realApplyAction = ReducersModule.applyAction;
+
+    // Spy on applyAction: throw on any non-END_TURN action from p2 (= AI actions)
+    vi.spyOn(ReducersModule, 'applyAction').mockImplementation((state, action) => {
+      if ('playerId' in action && action.playerId === 'p2' && action.type !== 'END_TURN') {
+        throw new TypeError('mock: AI returned action that breaks applyAction');
+      }
+      return realApplyAction(state, action);
+    });
+
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const aiWithIllegalAction = (): AiTurnResult => ({
+      actions: [
+        { type: 'PLAY_UNIT', playerId: 'p2', cardId: 'Z01', targetSlot: 0 },
+        { type: 'END_TURN', playerId: 'p2' },
+      ],
+    });
+
+    expect(() => applyCombatTurn(run, { type: 'END_TURN', playerId: 'p1' }, aiWithIllegalAction)).not.toThrow();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('illegal action'), expect.anything());
   });
 
   it('returns updated heroHp after combat actions', () => {

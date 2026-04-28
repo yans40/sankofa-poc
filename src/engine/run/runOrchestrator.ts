@@ -40,9 +40,14 @@ export function applyCombatTurn(
       aiResult = { actions: [{ type: 'END_TURN', playerId: 'p2' }] };
     }
 
-    for (const action of aiResult.actions) {
-      combat = applyAction(combat, action);
-      if (combat.phase === 'gameover') break;
+    try {
+      for (const action of aiResult.actions) {
+        combat = applyAction(combat, action);
+        if (combat.phase === 'gameover') break;
+      }
+    } catch (e) {
+      // Guard: illegal action returned by AI must not crash the run
+      console.warn('[RunOrchestrator] AI returned an illegal action — forcing END_TURN for p2', e);
     }
 
     // Safety: if AI returned no END_TURN or the loop exited early
