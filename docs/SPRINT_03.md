@@ -17,14 +17,12 @@
 
 | # | Titre | Auteur prévu | Size | Statut |
 |---|---|---|---|---|
-| TBD | `[engine] IA adversaire heuristique value-of-board` | claude | M | open |
-| TBD | `[engine] State machine mode run (3 combats, HP persistant)` | claude | M | open |
-| TBD | `[ux] Écran sélection de carte entre combats (3 propositions)` | cursor | S | open |
-| TBD | `[ux] Écran carte du voyage + écrans victoire/défaite run` | cursor | M | open — dépend Q-009 (défaut: Option 2) |
-| TBD | `[ux] Lore : proverbes Sankofa avant chaque combat` | libre | S | open |
-| TBD | `[docs] Addendum M4 dans POC_BRIEF + mise à jour CLAUDE.md` | claude | S | open (cette PR) |
-
-> Les numéros d'issues seront mis à jour après création sur GitHub.
+| #39 | `[engine] IA adversaire heuristique value-of-board` | claude | M | open |
+| #40 | `[engine] State machine mode run (3 combats, HP persistant)` | claude | M | open |
+| #41 | `[ux] Écran sélection de carte entre combats (3 propositions)` | cursor | S | open |
+| #42 | `[ux] Écran carte du voyage + écrans victoire/défaite run` | cursor | M | open — dépend Q-009 (défaut: Option 2) |
+| #43 | `[ux] Lore : proverbes Sankofa avant chaque combat` | libre | S | open |
+| #44 | `[docs] Addendum M4 + Sprint 03 planning` | claude | S | open (cette PR) |
 
 ---
 
