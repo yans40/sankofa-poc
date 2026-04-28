@@ -635,6 +635,50 @@ Une carte est considérée comme implémentée si :
 
 ---
 
+## M4 — Voyage de Sankofa (addendum post-POC)
+
+> **Statut :** Cadré par le PM — en attente d'arbitrage PO sur Q-006 à Q-009.
+> **Objectif :** Prouver que le POC est rejouable. IA adversaire + mode run-based 3 combats.
+> **Philosophie :** Profondeur avant largeur. Pas de nouvelle faction, pas de PvP. Le minimum viable pour répondre à la question : *« j'ai envie d'en relancer une ? »*
+
+### M4.1 — IA adversaire heuristique
+
+- À chaque tour, l'IA évalue chaque coup possible par un score simple = **(dégâts potentiels infligés) + (valeur statline des unités jouées) − (mana inutilisé si non optimal)**. Joue le coup au meilleur score, recalcule, s'arrête quand aucun coup n'a un score > 0.
+- Pas de prédiction sur les tours suivants. Pas de bluff. Pas d'apprentissage.
+- **Seuils de validation** : l'IA doit battre un joueur qui joue au hasard ≥ 70 % du temps ; doit perdre face à un joueur sensé ≥ 50 % du temps. Ces seuils sont la définition de « correct » — ne pas viser plus.
+- Implémentation attendue dans `src/engine/ai/heuristic.ts` (engine pur, sans React/DOM).
+
+### M4.2 — Mode Voyage (run-based)
+
+- **Une run = 3 combats successifs** contre 3 adversaires de difficulté croissante (decks IA prédéfinis, non générés).
+- **Deck de départ** : 20 cartes liées à la faction choisie au lancement.
+- **Entre chaque combat** : le joueur choisit 1 carte parmi 3 propositions aléatoires à ajouter à son deck (21, puis 22 cartes).
+- **PV héros** : conservés entre combats + soin partiel au début de chaque nouveau combat (montant : cf. Q-006).
+- **Fin de run** : victoire si les 3 combats sont gagnés ; défaite si PV héros = 0 lors d'un combat.
+- **Pas** de meta-progression entre runs, pas de récompense persistante.
+- Implémentation attendue dans `src/engine/run/runState.ts`.
+
+### M4.3 — Lore
+
+- Avant chaque combat, un proverbe ou fragment Sankofa s'affiche (3 proverbes hardcodés pour M4).
+- Le nom *Voyage de Sankofa* renvoie au sens du concept (retourner chercher ce qu'on a oublié).
+
+### M4.4 — Hors-périmètre M4
+
+- ❌ PvP en ligne (M6)
+- ❌ Nouvelle faction (M5)
+- ❌ Meta-progression / collection / packs
+- ❌ Matchmaking / backend / persistance entre sessions
+- ❌ Campagne narrative complète (M7)
+
+### M4.5 — Critère d'acceptation M4
+
+> Verdict subjectif du PO après une run complète : *« j'ai envie d'en relancer une »*. Si non, M5/M6 sont gelés et la stratégie est rouverte.
+
+Questions ouvertes : Q-006, Q-007, Q-008, Q-009 (voir `docs/QUESTIONS.md`).
+
+---
+
 **Fin du brief.**
 
 *Pour toute question pendant le développement, créer une issue GitHub taguée `question:` ou consulter directement le PO.*

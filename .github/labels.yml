@@ -116,6 +116,10 @@
   color: "0052cc"
   description: "20 cartes, animations, écran d'accueil"
 
+- name: "M4 — Voyage de Sankofa"
+  color: "0052cc"
+  description: "IA heuristique + mode run 3 combats. Test de rejouabilité."
+
 - name: "Transverse"
   color: "8b949e"
   description: "Tâche transverse aux milestones"
