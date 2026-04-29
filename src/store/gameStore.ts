@@ -3,7 +3,10 @@ import type { GameState, GameAction, PlayerId } from '../engine/types.js';
 import { initialGameState } from '../engine/gameState.js';
 import { applyAction } from '../engine/reducers.js';
 import type { RunState } from '../engine/run/runState.js';
-import { selectCard } from '../engine/run/runReducer.js';
+import { createRun } from '../engine/run/runState.js';
+import { selectCard, startCombat } from '../engine/run/runReducer.js';
+import { applyCombatTurn } from '../engine/run/runOrchestrator.js';
+import { aiPlayTurn } from '../engine/ai/heuristic.js';
 
 export type SelectionMode =
   | { kind: 'none' }
@@ -21,12 +24,16 @@ interface GameStore {
   screen: 'faction_select' | 'mulligan' | 'hotseat' | 'game' | 'gameover';
   hotSeatPending: PlayerId | null;
   run: RunState | null;
+  runTotalDamageDealt: number;
 
   startGame: (p1: 'orisha' | 'zulu', p2: 'orisha' | 'zulu') => void;
   dispatch: (action: GameAction) => void;
   setSelection: (mode: SelectionMode) => void;
   confirmHotSeat: () => void;
   selectRunCard: (cardId: string) => void;
+  initRun: (faction: 'orisha' | 'zulu') => void;
+  startRunCombat: () => void;
+  resetRun: () => void;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -37,6 +44,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   screen: 'faction_select',
   hotSeatPending: null,
   run: null,
+  runTotalDamageDealt: 0,
 
   startGame: (p1, p2) => {
     const state = initialGameState(p1, p2);
@@ -44,14 +52,30 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   dispatch: (action) => {
+    const run = get().run;
+
+    // Run mode: route all combat actions through applyCombatTurn (handles AI + gameover)
+    if (run?.phase === 'combat') {
+      const syncedRun: RunState = { ...run, currentCombat: get().gameState };
+      const prevP2Hp = syncedRun.currentCombat!.players.p2.heroHealth;
+      const updatedRun = applyCombatTurn(syncedRun, action, aiPlayTurn);
+      const nextP2Hp = updatedRun.currentCombat?.players.p2.heroHealth ?? 0;
+      const dmg = Math.max(0, prevP2Hp - nextP2Hp);
+      set({
+        run: updatedRun,
+        gameState: updatedRun.currentCombat ?? get().gameState,
+        selection: { kind: 'none' },
+        runTotalDamageDealt: get().runTotalDamageDealt + dmg,
+      });
+      return;
+    }
+
+    // Hot-seat mode
     const prev = get().gameState;
     const next = applyAction(prev, action);
-    // Detect turn switch → show hot-seat screen
     const wasActive = prev.activePlayerId;
     const isActive = next.activePlayerId;
     const turnChanged = wasActive !== isActive && next.phase !== 'gameover' && next.phase !== 'mulligan';
-
-    // Detect mulligan completion → move to game
     const mulliganDone = prev.phase === 'mulligan' && next.phase !== 'mulligan';
 
     if (next.phase === 'gameover') {
@@ -77,4 +101,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const nextRun = selectCard(run, cardId);
     set({ run: nextRun });
   },
+
+  initRun: (faction) => {
+    const seed = Math.floor(Math.random() * 1_000_000);
+    const run = createRun(faction, seed);
+    set({ run, runTotalDamageDealt: 0 });
+  },
+
+  startRunCombat: () => {
+    const run = get().run;
+    if (!run || run.phase !== 'starting') return;
+    const nextRun = startCombat(run);
+    set({ run: nextRun, gameState: nextRun.currentCombat!, selection: { kind: 'none' } });
+  },
+
+  resetRun: () => set({ run: null, runTotalDamageDealt: 0 }),
 }));

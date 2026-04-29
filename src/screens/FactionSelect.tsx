@@ -82,6 +82,7 @@ function FactionCard({
 
 export function FactionSelect() {
   const startGame = useGameStore(s => s.startGame);
+  const initRun = useGameStore(s => s.initRun);
   const [p1, setP1] = useState<Faction>('orisha');
   const [p2, setP2] = useState<Faction>('zulu');
 
@@ -135,13 +136,22 @@ export function FactionSelect() {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => startGame(p1, p2)}
-        className="rounded-full bg-yellow-500 px-12 py-4 text-lg font-black text-black shadow-lg shadow-yellow-500/25 transition-transform duration-200 hover:scale-[1.02] hover:bg-yellow-400 active:scale-[0.98]"
-      >
-        Commencer la partie
-      </button>
+      <div className="flex flex-col sm:flex-row gap-4 items-center">
+        <button
+          type="button"
+          onClick={() => startGame(p1, p2)}
+          className="rounded-full bg-gray-700 px-10 py-3 text-base font-bold text-white shadow-lg transition-transform duration-200 hover:scale-[1.02] hover:bg-gray-600 active:scale-[0.98]"
+        >
+          Partie libre (hot-seat)
+        </button>
+        <button
+          type="button"
+          onClick={() => initRun(p1)}
+          className="rounded-full bg-yellow-500 px-12 py-4 text-lg font-black text-black shadow-lg shadow-yellow-500/25 transition-transform duration-200 hover:scale-[1.02] hover:bg-yellow-400 active:scale-[0.98]"
+        >
+          Commencer le voyage
+        </button>
+      </div>
     </div>
   );
 }
