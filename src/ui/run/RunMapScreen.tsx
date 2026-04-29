@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { useGameStore } from '../../store/gameStore.js';
 
 const STEP_LABELS = ['Combat 1', 'Combat 2', 'Combat 3'];
@@ -66,10 +67,12 @@ export function RunMapScreen() {
             <span className="text-gray-400">PV du héros</span>
             <span className="text-white">{heroHp} / {heroMaxHp}</span>
           </div>
-          <div className="h-3 w-full rounded-full bg-gray-800 overflow-hidden">
+          <div
+            className="h-3 w-full rounded-full bg-gray-800 overflow-hidden"
+            style={{ '--hp': `${hpPercent}%` } as CSSProperties}
+          >
             <div
-              className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 transition-all"
-              style={{ width: `${hpPercent}%` }}
+              className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400 transition-all [width:var(--hp)]"
               role="progressbar"
               aria-valuenow={heroHp}
               aria-valuemin={0}

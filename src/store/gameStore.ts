@@ -24,6 +24,7 @@ interface GameStore {
   screen: 'faction_select' | 'mulligan' | 'hotseat' | 'game' | 'gameover';
   hotSeatPending: PlayerId | null;
   run: RunState | null;
+  runTotalDamageDealt: number;
 
   startGame: (p1: 'orisha' | 'zulu', p2: 'orisha' | 'zulu') => void;
   dispatch: (action: GameAction) => void;
@@ -43,6 +44,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   screen: 'faction_select',
   hotSeatPending: null,
   run: null,
+  runTotalDamageDealt: 0,
 
   startGame: (p1, p2) => {
     const state = initialGameState(p1, p2);
@@ -55,11 +57,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     // Run mode: route all combat actions through applyCombatTurn (handles AI + gameover)
     if (run?.phase === 'combat') {
       const syncedRun: RunState = { ...run, currentCombat: get().gameState };
+      const prevP2Hp = syncedRun.currentCombat!.players.p2.heroHealth;
       const updatedRun = applyCombatTurn(syncedRun, action, aiPlayTurn);
+      const nextP2Hp = updatedRun.currentCombat?.players.p2.heroHealth ?? 0;
+      const dmg = Math.max(0, prevP2Hp - nextP2Hp);
       set({
         run: updatedRun,
         gameState: updatedRun.currentCombat ?? get().gameState,
         selection: { kind: 'none' },
+        runTotalDamageDealt: get().runTotalDamageDealt + dmg,
       });
       return;
     }
@@ -99,7 +105,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   initRun: (faction) => {
     const seed = Math.floor(Math.random() * 1_000_000);
     const run = createRun(faction, seed);
-    set({ run });
+    set({ run, runTotalDamageDealt: 0 });
   },
 
   startRunCombat: () => {
@@ -109,5 +115,5 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ run: nextRun, gameState: nextRun.currentCombat!, selection: { kind: 'none' } });
   },
 
-  resetRun: () => set({ run: null }),
+  resetRun: () => set({ run: null, runTotalDamageDealt: 0 }),
 }));

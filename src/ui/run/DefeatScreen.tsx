@@ -6,10 +6,12 @@ export function DefeatScreen() {
   const run = useGameStore(s => s.run);
   const resetRun = useGameStore(s => s.resetRun);
   const initRun = useGameStore(s => s.initRun);
+  const totalDamageDealt = useGameStore(s => s.runTotalDamageDealt) ?? 0;
 
   if (!run) return null;
 
   const cardsAdded = run.playerDeck.length - INITIAL_DECK_SIZE;
+  const hpLost = run.heroMaxHp - run.heroHp;
 
   function handleRetry() {
     resetRun();
@@ -37,6 +39,14 @@ export function DefeatScreen() {
         <div className="flex justify-between text-sm">
           <span className="text-gray-400">Défaite au combat</span>
           <span className="font-bold text-red-400">{run.combatIndex + 1} / 3</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">PV perdus</span>
+          <span className="font-bold text-red-400">{hpLost}</span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-400">Dégâts infligés</span>
+          <span className="font-bold text-orange-300">{totalDamageDealt}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-400">Cartes ajoutées</span>

@@ -31,14 +31,14 @@ beforeEach(() => {
   resetRun.mockReset();
   initRun.mockReset();
   useGameStoreMock.mockImplementation((selector: (s: object) => unknown) =>
-    selector({ run: makeRun(), resetRun, initRun }),
+    selector({ run: makeRun(), resetRun, initRun, runTotalDamageDealt: 0 }),
   );
 });
 
 describe('DefeatScreen', () => {
   it('returns null when run is null', () => {
     useGameStoreMock.mockImplementation((sel: (s: object) => unknown) =>
-      sel({ run: null, resetRun, initRun }),
+      sel({ run: null, resetRun, initRun, runTotalDamageDealt: 0 }),
     );
     const { container } = render(<DefeatScreen />);
     expect(container.firstChild).toBeNull();
@@ -56,7 +56,7 @@ describe('DefeatScreen', () => {
 
   it('defeat at combat 0 shows 1 / 3', () => {
     useGameStoreMock.mockImplementation((sel: (s: object) => unknown) =>
-      sel({ run: makeRun({ combatIndex: 0 }), resetRun, initRun }),
+      sel({ run: makeRun({ combatIndex: 0 }), resetRun, initRun, runTotalDamageDealt: 0 }),
     );
     render(<DefeatScreen />);
     expect(screen.getByText('1 / 3')).toBeTruthy();
@@ -72,6 +72,20 @@ describe('DefeatScreen', () => {
     render(<DefeatScreen />);
     expect(screen.getByRole('button', { name: /réessayer/i })).toBeTruthy();
     expect(screen.getByRole('button', { name: /retour/i })).toBeTruthy();
+  });
+
+  it('shows HP lost (heroMaxHp - heroHp)', () => {
+    render(<DefeatScreen />);
+    // heroHp: 0, heroMaxHp: 30 → PV perdus = 30
+    expect(screen.getByText('30')).toBeTruthy();
+  });
+
+  it('shows total damage dealt', () => {
+    useGameStoreMock.mockImplementation((sel: (s: object) => unknown) =>
+      sel({ run: makeRun(), resetRun, initRun, runTotalDamageDealt: 42 }),
+    );
+    render(<DefeatScreen />);
+    expect(screen.getByText('42')).toBeTruthy();
   });
 
   it('"Réessayer" resets and starts a new run with same faction', () => {
